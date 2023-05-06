@@ -1,12 +1,14 @@
 version: "3.8"
 
 networks:
-    cotelus-net: null
+    aquamanager-net: null
 
 services:
     # Servicio proxy - filtro
     proxy:
-        image: proxy:1
+        build:
+            context: .
+            dockerfile: proxy/dockerfile
         restart: unless-stopped
         expose:
             - "80/tcp"
@@ -17,24 +19,29 @@ services:
                 max-size: "100m"
                 max-file: "3"
         networks:
-            - cotelus-net
+            - aquamanager-net
         depends_on:
-            - contador
+            - contadores
+            - personas
     
     # Servicio de contadores
-    contador:
-        image: contador:1
+    contadores:
+        build:
+            context: .
+            dockerfile: contadores/dockerfile
         restart: unless-stopped
         expose:
             - "8080/tcp"
         networks:
-            - cotelus-net
+            - aquamanager-net
 
     # Servicio de personas
     personas:
-        image: contador:1
+        build:
+            context: .
+            dockerfile: contadores/dockerfile
         restart: unless-stopped
         expose:
             - "8080/tcp"
         networks:
-            - cotelus-net
+            - aquamanager-net

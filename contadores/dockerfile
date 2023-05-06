@@ -2,6 +2,7 @@ FROM python:3.9-alpine
 
 WORKDIR /app
 
+RUN python -m pip install --upgrade pip
 RUN \
     apk add gcc musl-dev python3-dev libffi-dev openssl-dev cargo && \
     pip install --upgrade pip && \
@@ -12,7 +13,7 @@ RUN addgroup -S cotelus && adduser -S cotelus -G cotelus
 ENV PATH "$PATH:/home/cotelus/.local/bin"
 USER cotelus
 
-COPY --chown=cotelus:cotelus . .
+COPY --chown=cotelus:cotelus contadores/. .
 RUN pip install -r requirements.txt
 
 CMD ["gunicorn","core.prepare_service:prepare_service","--bind","0.0.0.0:8080","--worker-class","aiohttp.GunicornWebWorker"]
