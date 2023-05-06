@@ -1,0 +1,40 @@
+version: "3.8"
+
+networks:
+    cotelus-net: null
+
+services:
+    # Servicio proxy - filtro
+    proxy:
+        image: proxy:1
+        restart: unless-stopped
+        expose:
+            - "80/tcp"
+        ports:
+            - "8080:80/tcp"
+        logging:
+            options:
+                max-size: "100m"
+                max-file: "3"
+        networks:
+            - cotelus-net
+        depends_on:
+            - contador
+    
+    # Servicio de contadores
+    contador:
+        image: contador:1
+        restart: unless-stopped
+        expose:
+            - "8080/tcp"
+        networks:
+            - cotelus-net
+
+    # Servicio de personas
+    personas:
+        image: contador:1
+        restart: unless-stopped
+        expose:
+            - "8080/tcp"
+        networks:
+            - cotelus-net
