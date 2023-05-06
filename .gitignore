@@ -1,5 +1,6 @@
 # Ignorar archivos pycache y __pycache__
 __pycache__/
+**/__pycache__/
 *.pyc
 
 # Ignorar archivos generados por Pyenv
