@@ -1,0 +1,12 @@
+FROM node:alpine
+
+WORKDIR /app
+
+RUN npm install vue@3.2.13
+
+RUN addgroup -S cotelus && adduser -S cotelus -G cotelus
+ENV PATH "$PATH:/home/cotelus/.local/bin"
+USER cotelus
+COPY --chown=cotelus:cotelus . .
+
+CMD ["npm", "run", "serve"]
