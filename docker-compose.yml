@@ -7,8 +7,8 @@ services:
     # Servicio proxy - filtro
     proxy:
         build:
-            context: .
-            dockerfile: proxy/dockerfile
+            context: ./proxy
+            dockerfile: dockerfile
         restart: unless-stopped
         expose:
             - "80/tcp"
@@ -27,8 +27,8 @@ services:
     # Servicio de contadores
     contadores:
         build:
-            context: .
-            dockerfile: contadores/dockerfile
+            context: ./contadores
+            dockerfile: dockerfile
         restart: unless-stopped
         expose:
             - "8080/tcp"
@@ -38,8 +38,8 @@ services:
     # Servicio de personas
     personas:
         build:
-            context: .
-            dockerfile: contadores/dockerfile
+            context: ./contadores
+            dockerfile: dockerfile
         restart: unless-stopped
         expose:
             - "8080/tcp"

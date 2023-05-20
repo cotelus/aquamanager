@@ -13,7 +13,7 @@ RUN addgroup -S cotelus && adduser -S cotelus -G cotelus
 ENV PATH "$PATH:/home/cotelus/.local/bin"
 USER cotelus
 
-COPY --chown=cotelus:cotelus contadores/. .
+COPY --chown=cotelus:cotelus . .
 RUN pip install -r requirements.txt
 
 CMD ["gunicorn","core.prepare_service:prepare_service","--bind","0.0.0.0:8080","--worker-class","aiohttp.GunicornWebWorker"]
