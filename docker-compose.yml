@@ -13,7 +13,7 @@ services:
         expose:
             - "80/tcp"
         ports:
-            - "8080:80/tcp"
+            - "80:80/tcp"
         logging:
             options:
                 max-size: "100m"
@@ -21,8 +21,19 @@ services:
         networks:
             - aquamanager-net
         depends_on:
+            - aquamanager
             - contadores
             - personas
+
+    # Servicio de front-end
+    aquamanager:
+        build:
+            context: ./aquamanager
+            dockerfile: dockerfile
+        restart: unless-stopped
+        networks:
+            - aquamanager-net
+
     
     # Servicio de contadores
     contadores:
@@ -30,8 +41,6 @@ services:
             context: ./contadores
             dockerfile: dockerfile
         restart: unless-stopped
-        expose:
-            - "8080/tcp"
         networks:
             - aquamanager-net
 
@@ -41,7 +50,5 @@ services:
             context: ./contadores
             dockerfile: dockerfile
         restart: unless-stopped
-        expose:
-            - "8080/tcp"
         networks:
             - aquamanager-net
