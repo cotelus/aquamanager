@@ -1,10 +1,7 @@
 <template>
-    <v-btn router-link to="/" color="primary">Ir a Inicio</v-btn>
+    <v-btn router-link to="/contadores" color="primary">Ir a Contadores</v-btn>
     <div>
-        <h1>Contadores</h1>
-        <ul>
-            <li v-for="contador in contadores" :key="contador.id">{{ contador.nombre }}: {{ contador.valor }}</li>
-        </ul>
+        <h1>Objetivos</h1>
     </div>
 </template>
 
@@ -13,7 +10,7 @@ import axios from 'axios';
 import api_url from '../config.js';
 
 export default {
-    name: 'ContadoresQuery',
+    name: 'SeleccionObjetivo',
     data() {
         return {
             contadores: []

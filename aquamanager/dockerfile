@@ -3,8 +3,10 @@ FROM node:alpine
 WORKDIR /app
 
 RUN npm install vue@3.2.13
+RUN npm install vuetify@3.3.1
 
 RUN addgroup -S cotelus && adduser -S cotelus -G cotelus
+RUN export VUE_APP_BACKEND_API_BASE_URL=192.168.1.128
 ENV PATH "$PATH:/home/cotelus/.local/bin"
 USER cotelus
 COPY --chown=cotelus:cotelus . .

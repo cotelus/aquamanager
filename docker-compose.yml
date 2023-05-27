@@ -21,7 +21,7 @@ services:
         networks:
             - aquamanager-net
         depends_on:
-            - aquamanager
+            # - aquamanager
             - contadores
             - personas
 
