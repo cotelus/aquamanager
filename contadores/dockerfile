@@ -10,6 +10,7 @@ RUN \
     apk del gcc musl-dev python3-dev libffi-dev openssl-dev cargo
 
 RUN addgroup -S cotelus && adduser -S cotelus -G cotelus
+RUN chown cotelus /app
 ENV PATH "$PATH:/home/cotelus/.local/bin"
 USER cotelus
 
