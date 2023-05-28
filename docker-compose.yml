@@ -1,5 +1,8 @@
 version: "3.8"
 
+volumes:
+    contadores-db-data: null
+
 networks:
     aquamanager-net: null
 
@@ -39,8 +42,6 @@ services:
             - aquamanager-net
         environment:
             VUE_APP_BACKEND_API_BASE_URL: 192.168.1.128:8080
-
-
     
     # Servicio de contadores
     contadores:
@@ -50,6 +51,27 @@ services:
         restart: unless-stopped
         networks:
             - aquamanager-net
+        depends_on:
+            - contadores-db
+    
+    # Base de datos de contadores
+    contadores-db:
+        image: mongo
+        restart: unless-stopped
+        logging:
+            options:
+                max-size: "100m"
+                max-file: "3"
+        expose:
+            - "27017/tcp"
+        networks:
+            - aquamanager-net
+        volumes:
+            - "contadores-db-data:/data/db"
+            - type: tmpfs
+              target: /data/configdb
+              tmpfs:
+                  size: 10MB
 
     # Servicio de personas
     personas:

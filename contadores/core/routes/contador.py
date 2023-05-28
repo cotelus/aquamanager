@@ -10,6 +10,6 @@ def add_routes(routes: RouteTableDef):
     """
     @routes.get('/contadores/')
     async def list_(request: web.Request):
-        contador = ContadorController()
+        contador = ContadorController(db=1)
         return web.json_response(await contador.get_list(
         ), status=200)
