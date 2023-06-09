@@ -36,3 +36,4 @@ pnpm-debug.log*
 
 # Directorio de certificados
 certs/*
+*.log

@@ -1,9 +1,6 @@
 from aiohttp.web import RouteTableDef
 from aiohttp import web
-
-
 from core.controllers.auth import AuthController
-
 
 def add_routes(routes: RouteTableDef):
     """

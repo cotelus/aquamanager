@@ -30,10 +30,10 @@ class AuthController():
         # Realiza la autenticación y verifica las credenciales del usuario
         # Si las credenciales son válidas, genera el token JWT
         user = await self.get_user_from_db(username)
-        username = user['username']
-        password = user['password']
+        db_username = user['username']
+        db_password = user['password']
         is_admin = user['admin']
-        if username == 'admin' and str(password) == '1234' and is_admin:
+        if db_username == 'admin' and str(password) == str(db_password) and is_admin:
             token = self.generate_token(username)
             return token
 
