@@ -21,7 +21,7 @@ export default {
     },
     methods: {
         fetchContadores() {
-            axios.get(`http://${api_url}/contadores/`)
+            axios.get(`${api_url}/contadores/`)
                 .then(response => {
                     this.contadores = response.data;
                 })
