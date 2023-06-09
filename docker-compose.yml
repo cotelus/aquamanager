@@ -55,6 +55,8 @@ services:
         restart: unless-stopped
         networks:
             - aquamanager-net
+        environment:
+            CONTADORES_DB: contadores-db
         depends_on:
             - contadores-db
     

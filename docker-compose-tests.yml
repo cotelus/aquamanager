@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017/tcp"
+    volumes:
+      - type: tmpfs
+        target: /data/configdb
+        tmpfs:
+          size: 10MB
+      - type: tmpfs
+        target: /data/db
+        tmpfs:
+          size: 1GB

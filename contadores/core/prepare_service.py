@@ -2,6 +2,9 @@ from aiohttp import web
 from core.routes.contador import add_routes as contador_routes
 
 async def prepare_service():
+    #TODO  Inicializar controladores
+
+
     # Se crea la aplicación
     app = web.Application()
 

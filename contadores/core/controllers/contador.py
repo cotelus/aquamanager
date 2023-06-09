@@ -1,11 +1,17 @@
 from pymongo import MongoClient
 from core.log.logger import logger
+from core.load import get_venv
 
 class ContadorController():
     def __init__(self, db=None):
         self.name = "Controlador de contadores - SINGLETON -"
         self.contadores = [{'nombre':'Contador 1', 'valor': 2}, {'nombre':'Contador 2', 'valor': 6}]
         self.db = db
+        
+        # TODO Quitar esto
+        db = get_venv('CONTADORES_DB')
+        self.db = db
+
         logger.debug("Objeto controlador de contadores creado")
 
     """
@@ -19,7 +25,7 @@ class ContadorController():
     # Conexión a la base de datos
     async def initialize_db(self):
         try:
-            client = MongoClient('mongodb://contadores-db:27017/')
+            client = MongoClient(f'mongodb://{self.db}:27017/')
             logger.debug(f"Client: {client}")
             self.db = client['db']
             logger.debug(f"Base de datos: {self.db}")

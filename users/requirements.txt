@@ -10,3 +10,7 @@ idna==3.3
 multidict==6.0.2
 pymongo==4.3.3
 yarl==1.7.2
+pytest==7.3.1
+aiohttp-jwt==0.6.1
+PyJWT==2.7.0
+pytest-asyncio==0.21.0
