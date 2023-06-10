@@ -20,6 +20,7 @@
 <script>
 import axios from 'axios';
 import api_url from '../config.js';
+import router from '../router.js';
 
 export default {
     data() {
@@ -37,12 +38,17 @@ export default {
                     password: this.password,
                 });
                 
+                // Se añade el jwt al localStorage
                 console.log('Response:', response.data);
-                // Realiza las acciones necesarias con la respuesta del servidor
+                const jwtToken = response.data.token; 
+                localStorage.setItem('jwtToken', jwtToken);
+
             } catch (error) {
                 console.error('Error:', error);
-                // Maneja el error de la petición
             }
+
+            // Finalmente se redirige a '/'
+            router.push({path:'/'});
         },
         login() {
             console.log('Username:', this.username);

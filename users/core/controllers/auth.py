@@ -36,7 +36,7 @@ class AuthController():
         is_admin = user['admin']
         if db_username == 'admin' and str(password) == str(db_password) and is_admin:
             token = self.generate_token(username)
-            return token
+            return {"token":token}
 
         raise web.HTTPUnauthorized()
 
