@@ -3,13 +3,13 @@
         <v-sheet width="500" height="300" class="mx-auto elevation-10 rounded-lg p-6">
             <v-sheet width="400" class="mx-auto">
                 <v-form fast-fail @submit.prevent="login">
-                    <h1 class="mb-4 mt-4">Inicio de sesión</h1>
-                    <v-text-field variant="underlined" v-model="username" label="Usuario" class="mb-1"></v-text-field>
-                    <v-text-field variant="underlined" v-model="password" label="Contraseña"
+                    <h1 class="mb-4 mt-4 text-light-blue-darken-2">Inicio de sesión</h1>
+                    <v-text-field variant="underlined" color="#3490c9" v-model="username" label="Usuario" class="mb-1"></v-text-field>
+                    <v-text-field variant="underlined" color="#3490c9" v-model="password" label="Contraseña"
                         :type="show ? 'text' : 'password'" :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
                         @click:append="show_pass" class="mb-1"></v-text-field>
 
-                    <v-btn @click="submitLoginForm" variant="outlined" color="primary" block>Iniciar sesión</v-btn>
+                    <v-btn @click="submitLoginForm" variant="outlined" color="#3490c9" block>Iniciar sesión</v-btn>
                 </v-form>
             </v-sheet>
         </v-sheet>
@@ -23,6 +23,9 @@ import api_url from '../config.js';
 import router from '../router.js';
 
 export default {
+    beforeCreate: function() {
+        document.body.className = 'w-bg';
+    },
     data() {
         return {
             username: '',

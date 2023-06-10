@@ -6,6 +6,7 @@ RUN npm install vue@3.2.13
 RUN npm install vuetify@3.2.5
 RUN npm install --save material-design-icons-iconfont
 RUN npm install @mdi/font
+RUN npm install sass-loader --save-dev
 
 RUN addgroup -S cotelus && adduser -S cotelus -G cotelus
 ENV PATH "$PATH:/home/cotelus/.local/bin"
