@@ -6,8 +6,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-import api_url from '../config.js';
+// import axios from 'axios';
+// import api_url from '../config.js';
+import router from '../router.js';
 
 export default {
     name: 'SeleccionObjetivo',
@@ -21,13 +22,16 @@ export default {
     },
     methods: {
         fetchContadores() {
-            axios.get(`${api_url}/contadores/`)
-                .then(response => {
-                    this.contadores = response.data;
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+            // axios.get(`${api_url}/contadores/`)
+            //     .then(response => {
+            //         this.contadores = response.data;
+            //     })
+            //     .catch(error => {
+            //         console.error(error);
+            //     });
+            if (!localStorage.getItem('jwtToken')) {
+                router.push({path:'/login'})
+            }
         }
     }
 }

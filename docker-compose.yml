@@ -2,6 +2,7 @@ version: "3.8"
 
 volumes:
     contadores-db-data: null
+    users-db-data: null
 
 networks:
     aquamanager-net: null
@@ -30,6 +31,7 @@ services:
             # - aquamanager
             - contadores
             - personas
+            - users
 
     # Servicio de front-end
     aquamanager:
@@ -87,3 +89,35 @@ services:
         restart: unless-stopped
         networks:
             - aquamanager-net
+
+        # Servicio de contadores
+    users:
+        build:
+            context: ./users
+            dockerfile: dockerfile
+        restart: unless-stopped
+        networks:
+            - aquamanager-net
+        environment:
+            CONTADORES_DB: users-db
+        depends_on:
+            - users-db
+    
+    # Base de datos de contadores
+    users-db:
+        image: mongo
+        restart: unless-stopped
+        logging:
+            options:
+                max-size: "100m"
+                max-file: "3"
+        expose:
+            - "27017/tcp"
+        networks:
+            - aquamanager-net
+        volumes:
+            - "users-db-data:/data/db"
+            - type: tmpfs
+              target: /data/configdb
+              tmpfs:
+                  size: 10MB
