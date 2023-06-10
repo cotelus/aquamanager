@@ -30,6 +30,7 @@ class AuthController():
         # Realiza la autenticación y verifica las credenciales del usuario
         # Si las credenciales son válidas, genera el token JWT
         user = await self.get_user_from_db(username)
+        logger.debug(f"Usuario: {user}")
         db_username = user['username']
         db_password = user['password']
         is_admin = user['admin']
@@ -56,6 +57,7 @@ class AuthController():
 
     # Rescatar usuario de la base de datos
     async def get_user_from_db(self, username: str):
+        logger.debug(f"Asking to users db for {username}")
         await self.initialize_db()
         user = None
         logger.debug(f"self.db = {self.db}")

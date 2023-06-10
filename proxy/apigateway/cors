@@ -1,0 +1,9 @@
+if ($request_method = 'OPTIONS') {
+  add_header 'Access-Control-Max-Age' $access_control_max_age;
+  add_header 'Access-Control-Allow-Origin' $access_control_allow_origin;
+  add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+  add_header 'Access-Control-Allow-Methods' $cors_allow_methods;
+  add_header 'Content-Type' 'text/plain; charset=utf-8';
+  add_header 'Content-Length' 0;
+  return 204;
+}

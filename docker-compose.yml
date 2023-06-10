@@ -25,7 +25,7 @@ services:
         networks:
             - aquamanager-net
         volumes:
-            - ./proxy/apigateway/apigateway.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./proxy/apigateway/:/etc/nginx/conf.d/:ro
             - ./certs:/etc/letsencrypt
         depends_on:
             # - aquamanager
@@ -99,7 +99,7 @@ services:
         networks:
             - aquamanager-net
         environment:
-            CONTADORES_DB: users-db
+            AUTH_DB: users-db
         depends_on:
             - users-db
     

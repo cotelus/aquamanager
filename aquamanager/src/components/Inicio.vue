@@ -18,17 +18,10 @@ export default {
         };
     },
     mounted() {
-        this.fetchContadores();
+        this.backToLogin();
     },
     methods: {
-        fetchContadores() {
-            // axios.get(`${api_url}/contadores/`)
-            //     .then(response => {
-            //         this.contadores = response.data;
-            //     })
-            //     .catch(error => {
-            //         console.error(error);
-            //     });
+        backToLogin() {
             if (!localStorage.getItem('jwtToken')) {
                 router.push({path:'/login'})
             }
