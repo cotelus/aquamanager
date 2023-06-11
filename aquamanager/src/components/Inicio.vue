@@ -1,6 +1,6 @@
 <template>
     <h1 class="text-white">Inicio</h1>
-    <v-card class="mx-auto" max-width="500">
+    <v-card max-width="500" class="mx-auto elevation-10 rounded-lg p-6">
         <v-container fluid>
             <v-row>
                 <v-col v-for="card in cards" :key="card.title" :cols="card.flex">
