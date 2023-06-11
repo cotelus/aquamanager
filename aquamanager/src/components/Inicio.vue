@@ -1,5 +1,5 @@
 <template>
-    <h1 class="text-white">AquaManager</h1>
+    <h1 class="text-white">Inicio</h1>
     <v-card class="mx-auto" max-width="500">
         <v-container fluid>
             <v-row>
