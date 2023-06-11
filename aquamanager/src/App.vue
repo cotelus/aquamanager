@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <div v-if="drawerOpen" class="drawer-overlay" @click="toggleDrawer"></div>
     <!-- Barra de navegación que será heredada para todas las demás vistas -->
+    <div v-if="drawerOpen" class="drawer-overlay" @click="toggleDrawer"></div>
     <v-layout>
       <v-navigation-drawer v-model="drawerOpen" color="#3490c9" app>
         <v-list>
-          <v-list-item v-for="route in routes" :key="route.path" @click="navigateToPage(route.path)">
+          <v-list-item v-for="route in drawerRoutes" :key="route.path" @click="navigateToPage(route.path)">
             <v-list-item-icon>
               <v-icon class="text-white font-weight-bold">{{ route.icon }}</v-icon>
             </v-list-item-icon>
@@ -23,9 +23,18 @@
             style="cursor: pointer;">AquaManager</span>
         </v-app-bar-title>
 
-        <template v-slot:append>
-          <v-btn icon="mdi-dots-vertical"></v-btn>
-        </template>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn icon>
+              <v-icon v-bind="props">mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item v-for="(item, index) in threeDotsItems" :key="index" :value="index" @click="handleItemClick(item)">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-app-bar>
     </v-layout>
 
@@ -41,20 +50,23 @@ export default {
   data() {
     return {
       drawerOpen: false,
-      routes: [
+      drawerRoutes: [
         { path: '/', name: 'Inicio', icon: 'mdi-home' },
         { path: '/contadores', name: 'Comuneros', icon: 'mdi-account-group-outline' },
         { path: '/contadores', name: 'Hidrantes', icon: 'mdi-water-outline' },
         { path: '/contadores', name: 'Lecturas', icon: 'mdi-book-open-outline' },
         { path: '/contadores', name: 'Consumo', icon: 'mdi-cash-multiple' },
-        { path: '/about', name: 'Sobre mi', icon: 'mdi-information' },
-        // Agrega más rutas según tu aplicación
+        { path: '/about', name: 'Sobre mi', icon: 'mdi-information' }
+      ],
+      threeDotsItems: [
+        { title: 'Perfil', action: 'toUser' },
+        { title: 'Cerrar sesión', action: 'logout' },
       ],
     };
   },
   methods: {
-    navigateToPage(route, toggle=true) {
-      if (toggle){
+    navigateToPage(route, toggle = true) {
+      if (toggle) {
         this.toggleDrawer();
       }
       router.push({ path: route });
@@ -68,6 +80,20 @@ export default {
     resetCursor() {
       document.body.style.cursor = 'default';
     },
+    logout() {
+      console.log('Cerrando sesión de usuario');
+      localStorage.removeItem('jwtToken');
+      router.push({path: '/login'});
+    },
+    handleItemClick(item) {
+      const action = item.action;
+      if (action && typeof this[action] === 'function') {
+        this[action]();
+      }
+    },
+    toUser() {
+      router.push({ path: '/contadores' });
+    }
   }
 }
 </script>
