@@ -30,7 +30,8 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(item, index) in threeDotsItems" :key="index" :value="index" @click="handleItemClick(item)">
+            <v-list-item v-for="(item, index) in threeDotsItems" :key="index" :value="index"
+              @click="handleItemClick(item)">
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -47,12 +48,15 @@ import router from './router.js';
 
 export default {
   name: 'App',
+  beforeCreate: function () {
+    document.body.className = 'w-bg';
+  },
   data() {
     return {
       drawerOpen: false,
       drawerRoutes: [
         { path: '/', name: 'Inicio', icon: 'mdi-home' },
-        { path: '/contadores', name: 'Comuneros', icon: 'mdi-account-group-outline' },
+        { path: '/comuneros', name: 'Comuneros', icon: 'mdi-account-group-outline' },
         { path: '/contadores', name: 'Hidrantes', icon: 'mdi-water-outline' },
         { path: '/contadores', name: 'Lecturas', icon: 'mdi-book-open-outline' },
         { path: '/contadores', name: 'Consumo', icon: 'mdi-cash-multiple' },
@@ -83,7 +87,7 @@ export default {
     logout() {
       console.log('Cerrando sesión de usuario');
       localStorage.removeItem('jwtToken');
-      router.push({path: '/login'});
+      router.push({ path: '/login' });
     },
     handleItemClick(item) {
       const action = item.action;
