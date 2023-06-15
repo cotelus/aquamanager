@@ -5,6 +5,7 @@ import ComuneroDetalle from './components/ComuneroDetalle.vue';
 import ComunerosList from './components/ComunerosList.vue';
 import Inicio from './components/Inicio.vue';
 import LoginForm from './components/LoginForm.vue';
+import LecturasTable from './components/LecturasTable.vue';
 
 const routes = [
   {
@@ -26,6 +27,10 @@ const routes = [
   {
     path: '/comuneros/:id',
     component: ComuneroDetalle
+  },
+  {
+    path: '/lecturas',
+    component: LecturasTable
   },
   {
     path: '/:catchAll(.*)',
