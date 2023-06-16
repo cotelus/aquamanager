@@ -11,16 +11,23 @@ SECRET_KEY = 'secreto'
 
 class AuthController():
 
-    def __init__(self, db=None):
-        self.name = "Controlador de autenticacion - SINGLETON -"
-        self.contadores = [{'nombre':'Contador 1', 'valor': 2}, {'nombre':'Contador 2', 'valor': 6}]
-        self.db = db
+    _instance = None
+    db_name: str
+    db: MongoClient
+    name: str
 
-        # TODO Quitar esto
-        db = get_venv('AUTH_DB')
-        self.db = db
-
-        logger.debug("Objeto controlador de contadores creado")
+    def __new__(cls, db_name=None):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+            cls._instance.name = "Controlador de autenticación"
+            cls._instance.db_name = db_name
+            cls._instance.db = None
+            logger.debug("Objeto controlador de autenticación creado como Singleton")
+        return cls._instance
+    
+    @classmethod
+    def delete_instance(cls):
+        cls._instance = None
 
     async def signup(self, username: str, password: str):
         pass
@@ -48,7 +55,7 @@ class AuthController():
     # Conexión a la base de datos
     async def initialize_db(self):
         try:
-            client = MongoClient(f'mongodb://{self.db}:27017/')
+            client = MongoClient(f'mongodb://{self.db_name}:27017/')
             logger.debug(f"Client: {client}")
             self.db = client['db']
             logger.debug(f"Base de datos: {self.db}")
@@ -57,6 +64,9 @@ class AuthController():
 
     # Rescatar usuario de la base de datos
     async def get_user_from_db(self, username: str):
+        if self.db is None:
+            await self.initialize_db()
+
         logger.debug(f"Asking to users db for {username}")
         await self.initialize_db()
         user = None
