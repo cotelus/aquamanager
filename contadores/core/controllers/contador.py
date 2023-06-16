@@ -3,8 +3,15 @@ from core.log.logger import logger
 from core.load import get_venv
 
 class ContadorController():
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self, db=None):
-        self.name = "Controlador de contadores - SINGLETON -"
+        self.name = "Controlador de contadores"
         self.contadores = [{'nombre':'Contador 1', 'valor': 2}, {'nombre':'Contador 2', 'valor': 6}]
         self.db = db
         
