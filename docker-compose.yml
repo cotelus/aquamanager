@@ -58,7 +58,6 @@ services:
             - aquamanager-net
         environment:
             CONTADORES_DB: contadores-db
-            API_URL: https://aquamanager.ddns.net:8080
         depends_on:
             - contadores-db
     
