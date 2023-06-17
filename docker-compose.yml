@@ -30,13 +30,12 @@ services:
         depends_on:
             # - aquamanager
             - contadores
-            - personas
             - users
 
     # Servicio de front-end
     aquamanager:
         build:
-            context: ./aquamanager
+            context: ./frontend/aquamanager
             dockerfile: dockerfile
         expose:
             - "80/tcp"
@@ -52,7 +51,7 @@ services:
     # Servicio de contadores
     contadores:
         build:
-            context: ./contadores
+            context: ./backend/contadores
             dockerfile: dockerfile
         restart: unless-stopped
         networks:
@@ -81,19 +80,10 @@ services:
               tmpfs:
                   size: 10MB
 
-    # Servicio de personas
-    personas:
-        build:
-            context: ./contadores
-            dockerfile: dockerfile
-        restart: unless-stopped
-        networks:
-            - aquamanager-net
-
-        # Servicio de contadores
+    # Servicio de usuarios
     users:
         build:
-            context: ./users
+            context: ./backend/users
             dockerfile: dockerfile
         restart: unless-stopped
         networks:

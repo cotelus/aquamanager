@@ -1,0 +1,1 @@
+echo AUTH_DB=localhost python -m pytest .

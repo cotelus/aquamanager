@@ -1,15 +1,16 @@
 from aiohttp.web import RouteTableDef
 from aiohttp import web
+import http
 
-from core.controllers.contador import ContadorController
+from core.controllers.hidrante import HydrantController
 
 def add_routes(routes: RouteTableDef):
 
     """
         Devuelve una lista de contadores
     """
-    @routes.get('/contadores/')
+    @routes.get('/hidrantes/')
     async def list_(request: web.Request):
-        contador = ContadorController(db=1)
+        contador = HydrantController()
         return web.json_response(await contador.get_list(
-        ), status=200)
+        ), status=http.HTTPStatus.OK)
