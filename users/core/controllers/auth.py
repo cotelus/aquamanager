@@ -49,14 +49,19 @@ class AuthController():
         logger.debug(f"Usuario: {user} loged in")
         
         # Generar el token y devolverlo
-        token = self.generate_token(username)
+        token = await self.generate_token(user)
         return {"token":token}
-
-    def generate_token(self, username):
-        payload = {'username': username}
+    
+    async def generate_token(self, user: User):
+        payload = {
+            'username': user.username,
+            'user_id': user.id,
+            'hydrants': user.hydrants,
+            'admin': user.admin
+        }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
         return token
-    
+
     # Conexión e inicialización de la base de datos
     async def initialize_db(self):
         if self.db is None:
