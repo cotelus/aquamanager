@@ -36,6 +36,7 @@ class HydrantController():
                 counter = hydrant['counter'],
                 topic = hydrant['topic'],
                 user_id = hydrant['user_id'],
+                name = hydrant['name'],
             )
             hydrant_list.append(hydrant_model.to_dict())
         return {'result': hydrant_list}
@@ -70,7 +71,8 @@ class HydrantController():
             'valve_open': True,
             'user_id': True,
             'counter': True,
-            'topic': True
+            'topic': True,
+            'name': True,
         }
 
         try:

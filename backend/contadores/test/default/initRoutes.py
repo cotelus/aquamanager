@@ -50,23 +50,26 @@ class InitRoutes():
         hydrant_data = [
             {
                 "id": 1,
+                "name": "R17H3",
                 "valve_open": False,
                 "counter": 123.2,
-                "topic": '/hidrantes/h1',
+                "topic": "/hidrantes/r17h3",
                 "user_id": 2
             },
             {
                 "id": 2,
+                "name": "R17H1",
                 "valve_open": True,
                 "counter": 234.4,
-                "topic": '/hidrantes/h2',
+                "topic": "/hidrantes/r17h1",
                 "user_id": 2
             },
             {
                 "id": 3,
+                "name": "R02H1",
                 "valve_open": False,
                 "counter": 1,
-                "topic": '/hidrantes/h3',
+                "topic": "/hidrantes/r02h1",
                 "user_id": 5
             }
         ]
