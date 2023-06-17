@@ -11,7 +11,7 @@ class TestRouteAuth(InitRoutes):
     @pytest.mark.asyncio
     async def test_login_route(self):
         app = await prepare_service()
-        self.setup()
+        self.setup_test()
 
         jwt_regex = r"^[\w-]*\.[\w-]*\.[\w-]*$"
 
@@ -26,4 +26,10 @@ class TestRouteAuth(InitRoutes):
             resp = await client.post('/login/', json={'username': 'admin', 'password': 'no_pass'})
             assert resp.status == 401
 
+        self.tear_down()
+
+    # Por si un test no se ejecuta bien, que elimine las bases de datos
+    @pytest.fixture(scope='session')
+    def pytest_sessionfinish(self, session, exitstatus):
+        print("Ejecución de tests finalizada")
         self.tear_down()

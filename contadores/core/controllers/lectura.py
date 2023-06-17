@@ -14,7 +14,7 @@ class LecturaController:
             cls._instance.name = "Controlador de contadores"
             cls._instance.db_name = db_name
             cls._instance.db = None
-            logger.debug("Objeto controlador de autenticación creado como Singleton")
+            logger.debug("Objeto controlador de lectura creado como Singleton")
         return cls._instance
 
     @classmethod

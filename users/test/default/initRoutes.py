@@ -5,7 +5,7 @@ from core.load import get_venv
 
 class InitRoutes():
     # Configura las propiedades iniciales para los tests individuales
-    def setup(self):
+    def setup_test(self):
         db = get_venv('AUTH_DB')
 
         if db is not None and type(db) is str:
@@ -46,20 +46,22 @@ class InitRoutes():
         if not admin_user:
             logger.debug("El usuario 'admin' no existe. Insertando usuario en la colección 'users'...")
             admin_data = {
+                "id": 1,
                 "username": "admin",
-                "password": "1234",
+                "password": "$2a$12$nb8Z1HFvy3FLTjI.TaGm3OFQUreVMaQiQoN/Y5vxZ0Qu40pWLJ7Uq",
+                "hydrants": [1,2,3,4,5,6,7],
                 "admin": True
             }
             db.usuarios.insert_one(admin_data)
 
-    def delete_mongo(self, database_name: str):
+    def delete_mongo(self, db_name: str):
         # Conectarse a la base de datos MongoDB con datos por defecto
-        client = MongoClient()
-        db = client[database_name]
+        client = MongoClient(f'mongodb://{db_name}:27017/')
+        db = client['db']
 
         # Eliminar todas las colecciones de la base de datos
         for collection_name in db.list_collection_names():
             db.drop_collection(collection_name)
 
         # Eliminar la base de datos
-        client.drop_database(database_name)
+        client.drop_database('db')

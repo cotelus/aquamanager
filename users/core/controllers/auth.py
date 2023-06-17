@@ -6,6 +6,9 @@ from aiohttp_jwt import JWTMiddleware, login_required
 import jwt
 from aiohttp import web
 from core.load import get_venv
+from pymongo.database import Database
+import bcrypt
+from core.models.user import User
 
 SECRET_KEY = 'secreto'
 
@@ -13,7 +16,7 @@ class AuthController():
 
     _instance = None
     db_name: str
-    db: MongoClient
+    db: Database
     name: str
 
     def __new__(cls, db_name=None):
@@ -32,60 +35,70 @@ class AuthController():
     async def signup(self, username: str, password: str):
         pass
 
-    # Login de usuario
+    """
+    Login de usuario
+        1. Realiza la autenticación y verifica las credenciales del usuario
+        2. Si las credenciales son válidas, genera el token JWT
+    """
     async def login(self, username: str, password: str):
-        # Realiza la autenticación y verifica las credenciales del usuario
-        # Si las credenciales son válidas, genera el token JWT
-        user = await self.get_user_from_db(username)
-        logger.debug(f"Usuario: {user}")
-        db_username = user['username']
-        db_password = user['password']
-        is_admin = user['admin']
-        if db_username == 'admin' and str(password) == str(db_password) and is_admin:
-            token = self.generate_token(username)
-            return {"token":token}
+        user = await self.check_user_from_db(username, password)
+        if user is None:
+            logger.info(f"Wrong password for user: {username}")
+            raise web.HTTPUnauthorized()
 
-        raise web.HTTPUnauthorized()
+        logger.debug(f"Usuario: {user} loged in")
+        
+        # Generar el token y devolverlo
+        token = self.generate_token(username)
+        return {"token":token}
 
     def generate_token(self, username):
         payload = {'username': username}
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
         return token
     
-    # Conexión a la base de datos
+    # Conexión e inicialización de la base de datos
     async def initialize_db(self):
-        try:
-            client = MongoClient(f'mongodb://{self.db_name}:27017/')
-            logger.debug(f"Client: {client}")
-            self.db = client['db']
-            logger.debug(f"Base de datos: {self.db}")
-        except Exception as e:
-            logger.error(f"Falló la conexión con la base de datos - {e}")
-
-    # Rescatar usuario de la base de datos
-    async def get_user_from_db(self, username: str):
         if self.db is None:
-            await self.initialize_db()
+            try:
+                client = MongoClient(f'mongodb://{self.db_name}:27017/')
+                logger.debug(f"Client: {client}")
+                self.db = client['db']
+                logger.debug(f"Base de datos: {self.db}")
+                await self.initialize_db_collections()
+            except Exception as e:
+                logger.error(f"Falló la conexión con la base de datos - {e}")
+
+    # Inicializa las colecciones de la base de datos
+    async def initialize_db_collections(self):
+        if 'usuarios' not in self.db.list_collection_names():
+            self.db.create_collection('usuarios')
+            logger.debug("Se creó la colección 'usuarios'")
+
+    # Comprueba credenciales y devuelve al usuario
+    async def check_user_from_db(self, username: str, password:str) -> User:
+        user: User = None
+        await self.initialize_db()
 
         logger.debug(f"Asking to users db for {username}")
-        await self.initialize_db()
-        user = None
-        logger.debug(f"self.db = {self.db}")
 
-        if self.db is None:
-            return None
+        # Obtener el documento del usuario de la base de datos
+        document = self.db.usuarios.find_one({'username': username})
 
-        try:
-            collection = self.db['usuarios']
-            result = collection.find({"username": username})
-            logger.debug(result.__dict__)
+        if document:
+            bcrypt_pass = str(document['password'])
 
-            if not result._Cursor__empty:
-                for db_user in result:
-                    user = {'username': db_user['username'], 'password': db_user['password'], 'admin': db_user['admin']}
-                    break
-            return user
-        except Exception as e:
-            logger.error(f"Error al consultar DB - {e}")
-            return None
+            # Verificar contraseña
+            try:
+                same_pass = bcrypt.checkpw(password.encode('utf-8'), bcrypt_pass.encode('utf-8'))
+                if same_pass:
+                    user = User(
+                        id = document['id'],
+                        username = document['username'],
+                        hydrants = document['hydrants'],
+                        admin = document['admin']
+                    )
+            except ValueError:
+                logger.debug(f"Invalid password format - {username}")
 
+        return user
