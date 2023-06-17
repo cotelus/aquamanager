@@ -11,9 +11,6 @@ class InitRoutes():
         if db is not None and type(db) is str:
             # Configura base de datos
             self.set_up_mongodb(db)
-
-            # Inicia controladores
-            auth = AuthController(db)
     
     def tear_down(self):
         db = get_venv('AUTH_DB')

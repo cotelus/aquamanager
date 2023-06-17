@@ -67,18 +67,20 @@ class AuthController():
 
     # Conexión e inicialización de la base de datos
     async def initialize_db(self):
-        if self.db is None:
+        if self.db is None and self.db_name != "":
             try:
                 client = MongoClient(f'mongodb://{self.db_name}:27017/')
                 logger.debug(f"Client: {client}")
                 self.db = client['db']
                 logger.debug(f"Base de datos: {self.db}")
+                logger.debug(f"BD: mongodb://{self.db_name}:27017/")
                 await self.initialize_db_collections()
             except Exception as e:
                 logger.error(f"Falló la conexión con la base de datos - {e}")
 
     # Inicializa las colecciones de la base de datos
     async def initialize_db_collections(self):
+        logger.debug("Inicializando colecciones DB")
         if 'usuarios' not in self.db.list_collection_names():
             self.db.create_collection('usuarios')
             logger.debug("Se creó la colección 'usuarios'")
