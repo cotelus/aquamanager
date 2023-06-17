@@ -62,6 +62,9 @@ class AuthController():
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
         return token
 
+    async def decrypt_jwt(self, token_jwt: str):
+        return jwt.decode(token_jwt, SECRET_KEY, algorithms=['HS256'])
+
     # Conexión e inicialización de la base de datos
     async def initialize_db(self):
         if self.db is None:
