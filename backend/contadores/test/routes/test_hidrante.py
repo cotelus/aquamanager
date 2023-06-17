@@ -47,7 +47,7 @@ class TestRouteHidrante(InitRoutes):
             # Comprobar que funciona
             resp = await client.get(
                 '/hidrantes/',
-                headers={'jwt': ADMIN_JWT}
+                headers={'Authorization': ADMIN_JWT}
             )
             try:
                 assert resp.status == http.HTTPStatus.OK
@@ -87,7 +87,7 @@ class TestRouteHidrante(InitRoutes):
             # Comprobar que funciona
             resp = await client.get(
                 '/hidrantes/',
-                headers={'jwt': NONADMIN_JWT}
+                headers={'Authorization': NONADMIN_JWT}
             )
             try:
                 assert resp.status == http.HTTPStatus.OK

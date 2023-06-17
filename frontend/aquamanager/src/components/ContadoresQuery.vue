@@ -161,7 +161,13 @@ export default {
             }
         },
         fetchContadores() {
-            axios.get(`${api_url}/hidrantes/`)
+            var jwtToken = localStorage.getItem('jwtToken');
+
+            axios.get(`${api_url}/hidrantes/`, {
+                headers: {
+                    'Authorization': jwtToken
+                }
+            })
                 .then(response => {
                     this.contadores = response.data['result'];
                     console.log(this.contadores);

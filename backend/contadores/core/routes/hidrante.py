@@ -11,7 +11,7 @@ def add_routes(routes: RouteTableDef):
     """
     @routes.get('/hidrantes/')
     async def list_(request: web.Request):
-        jwt_header = request.headers.get('jwt')
+        jwt_header = request.headers.get('Authorization')
         
         if jwt_header:
             contador = HydrantController()
