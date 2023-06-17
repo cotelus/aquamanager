@@ -53,7 +53,6 @@ class AuthController():
         payload = {
             'username': user.username,
             'user_id': user.id,
-            'hydrants': user.hydrants,
             'admin': user.admin
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
@@ -102,7 +101,6 @@ class AuthController():
                     user = User(
                         id = document['id'],
                         username = document['username'],
-                        hydrants = document['hydrants'],
                         admin = document['admin']
                     )
             except ValueError:

@@ -29,7 +29,7 @@ class HydrantController():
         user = await decrypt_jwt(jwt_header)
         if user is not None:
             hydrant_list = list()
-            db_list = await self.get_list_from_db()
+            db_list = await self.get_list_from_db(user['user_id'], user['admin'])
             for hydrant in db_list:
                 hydrant_model = Hidrante(
                     id = hydrant['id'],
@@ -65,7 +65,7 @@ class HydrantController():
             logger.debug("Se creó la colección 'hidrantes'")
 
     # Rescatar elementos de la base de datos
-    async def get_list_from_db(self):
+    async def get_list_from_db(self, id: int, admin: bool):
         await self.initialize_db()
 
         fields = {
@@ -78,9 +78,13 @@ class HydrantController():
             'name': True,
         }
 
+        query = {}
+        if not admin:
+            query = {"user_id": id}
+
         try:
             collection = self.db['hidrantes']
-            result = collection.find({}, fields)
+            result = collection.find(query, fields)
             logger.debug(result.__dict__)
             return result
         except Exception as e:

@@ -4,8 +4,9 @@ from core.controllers.hidrante import HydrantController
 from core.log.logger import logger
 from core.load import get_venv
 
-ADMIN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcl9pZCI6MSwiaHlkcmFudHMiOlsxLDIsMyw0LDUsNiw3XSwiYWRtaW4iOnRydWV9.b3qSxkTCFBVPIwksdtjh_QgpB2g369n4qyCgEav4wv0"
-
+ADMIN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcl9pZCI6MSwiYWRtaW4iOnRydWV9.PSvNGtW-zZMibWQKYldIgrpEc_uJEPKZeR1ErtZd17s"
+NONADMIN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5vbmFkbWluIiwidXNlcl9pZCI6MiwiYWRtaW4iOmZhbHNlfQ.xq4fGUVdPt-WJ-OZiKa-GqP1JEVS1T_Bthw_Y1kDnnc"
+NORMALEMENTE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5vcm1hbGVtZW50ZSIsInVzZXJfaWQiOjMsImFkbWluIjpmYWxzZX0.eJlyzr5nOjl4Y4nj16sf7wJUR2vJqibFrhx7Rk-Di0E"
 
 class InitRoutes():
     # Configura las propiedades iniciales para los tests individuales

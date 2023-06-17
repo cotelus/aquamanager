@@ -1,7 +1,26 @@
-{
-    "admin": true,
-    "hydrants": [1, 2, 3, 4, 5, 6, 7],
-    "id": 1,
-    "password": "$2a$12$nb8Z1HFvy3FLTjI.TaGm3OFQUreVMaQiQoN/Y5vxZ0Qu40pWLJ7Uq",
-    "username": "admin"
-}
+/*
+    admin - 1234
+    noadmin - nosoyadmin
+    normalmente - nosoyadmintampoco
+*/
+
+[
+    {
+        "admin": true,
+        "id": 1,
+        "password": "$2a$12$nb8Z1HFvy3FLTjI.TaGm3OFQUreVMaQiQoN/Y5vxZ0Qu40pWLJ7Uq",
+        "username": "admin"
+    },
+    {
+        "admin": false,
+        "id": 2,
+        "password": "$2a$12$UASNdr28lHeEv2XCB4ZYxuK2QASxUrDiUNXgd4NaXclvYrJWyss2e",
+        "username": "nonadmin"
+    },
+    {
+        "admin": false,
+        "id": 3,
+        "password": "$2a$12$ZDR0VoySfGjvCFqzufvAJeTLl0xEWSSLMRp1SDu/ntcGbZR29lS2W",
+        "username": "normalemente"
+    }
+]
