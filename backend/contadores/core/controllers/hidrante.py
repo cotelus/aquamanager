@@ -3,6 +3,8 @@ from core.log.logger import logger
 from core.load import get_venv
 from pymongo.database import Database
 from core.models.hidrante import Hidrante
+from core.tools import decrypt_jwt
+from aiohttp import web
 
 class HydrantController():
     _instance = None
@@ -21,25 +23,26 @@ class HydrantController():
     @classmethod
     def delete_instance(cls):
         cls._instance = None
-
-    """
-        Devuelve una lista de contadores
-    """
-    async def get_list(self):
-        # return self.contadores
-        hydrant_list = list()
-        db_list = await self.get_list_from_db()
-        for hydrant in db_list:
-            hydrant_model = Hidrante(
-                id = hydrant['id'],
-                valve_open = hydrant['valve_open'],
-                counter = hydrant['counter'],
-                topic = hydrant['topic'],
-                user_id = hydrant['user_id'],
-                name = hydrant['name'],
-            )
-            hydrant_list.append(hydrant_model.to_dict())
-        return {'result': hydrant_list}
+    
+    # Devuelve una lista de contadores
+    async def get_list(self, jwt_header: str):
+        user = await decrypt_jwt(jwt_header)
+        if user is not None:
+            hydrant_list = list()
+            db_list = await self.get_list_from_db()
+            for hydrant in db_list:
+                hydrant_model = Hidrante(
+                    id = hydrant['id'],
+                    valve_open = hydrant['valve_open'],
+                    counter = hydrant['counter'],
+                    topic = hydrant['topic'],
+                    user_id = hydrant['user_id'],
+                    name = hydrant['name'],
+                )
+                hydrant_list.append(hydrant_model.to_dict())
+            return {'result': hydrant_list}
+        else:
+             raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
 
     # Conexión e inicialización de la base de datos
     async def initialize_db(self):

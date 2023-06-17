@@ -11,6 +11,10 @@ def add_routes(routes: RouteTableDef):
     """
     @routes.get('/hidrantes/')
     async def list_(request: web.Request):
-        contador = HydrantController()
-        return web.json_response(await contador.get_list(
-        ), status=http.HTTPStatus.OK)
+        jwt_header = request.headers.get('jwt')
+        
+        if jwt_header:
+            contador = HydrantController()
+            return web.json_response(await contador.get_list(jwt_header), status=http.HTTPStatus.OK)
+        else:
+            return web.Response(text='No se proporcionó el encabezado "jwt"', status=http.HTTPStatus.UNAUTHORIZED)

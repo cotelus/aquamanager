@@ -1,0 +1,1 @@
+CONTADORES_DB=localhost python -m pytest .

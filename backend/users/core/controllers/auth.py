@@ -1,11 +1,8 @@
 
 from core.log.logger import logger
 from pymongo import MongoClient
-import aiohttp
-from aiohttp_jwt import JWTMiddleware, login_required
 import jwt
 from aiohttp import web
-from core.load import get_venv
 from pymongo.database import Database
 import bcrypt
 from core.models.user import User

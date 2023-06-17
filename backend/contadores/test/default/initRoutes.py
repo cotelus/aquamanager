@@ -4,6 +4,8 @@ from core.controllers.hidrante import HydrantController
 from core.log.logger import logger
 from core.load import get_venv
 
+ADMIN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcl9pZCI6MSwiaHlkcmFudHMiOlsxLDIsMyw0LDUsNiw3XSwiYWRtaW4iOnRydWV9.b3qSxkTCFBVPIwksdtjh_QgpB2g369n4qyCgEav4wv0"
+
 
 class InitRoutes():
     # Configura las propiedades iniciales para los tests individuales
