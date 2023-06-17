@@ -1,0 +1,1 @@
+export VUE_APP_BACKEND_API_BASE_URL=https://aquamanager.ddns.net:8080
