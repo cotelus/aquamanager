@@ -1,54 +1,50 @@
+from influxdb import InfluxDBClient
 from pymongo import MongoClient
 from core.log.logger import logger
 from core.load import get_venv
+from influxdb import InfluxDBClient
+from core.models.lectura import Lectura
 
 class LecturaController:
     _instance = None
     db_name: str
-    db: MongoClient
+    db: InfluxDBClient
     name: str
 
     def __new__(cls, db_name=None):
         if not cls._instance:
             cls._instance = super().__new__(cls)
-            cls._instance.name = "Controlador de contadores"
             cls._instance.db_name = db_name
             cls._instance.db = None
-            logger.debug("Objeto controlador de lectura creado como Singleton")
+            logger.debug("Objeto controlador de Hidrantes creado como Singleton")
         return cls._instance
-
+    
     @classmethod
     def delete_instance(cls):
         cls._instance = None
+    
 
-    # Devuelve una lista de lecturas
-    async def get_list(self, filter:str):
-        await self.initialize_db()
-        return await self.get_list_from_db()
+    def initialize_db(self):
+        if self.db is None and self.db_name != "":
+            try:
+                self.db = InfluxDBClient(host=self.db_name, port=8086)
+                self.db.create_database('lecturas')
+                self.db.switch_database('lecturas')
+            except Exception as e:
+                logger.error(f"Falló la conexión con la base de datos - {e}")
 
-    # Conexión a la base de datos
-    async def initialize_db(self):
-        try:
-            client = MongoClient(f'mongodb://{self.db_name}:27017/')
-            logger.debug(f"Client: {client}")
-            self.db = client['db']
-            logger.debug(f"Base de datos: {self.db}")
-        except Exception as e:
-            logger.error(f"Falló la conexión con la base de datos - {e}")
-
-    # Rescatar elementos de la base de datos
-    async def get_list_from_db(self):
-        logger.debug(f"self.db = {self.db}")
-
-        if self.db is None:
-            return []
-
-        try:
-            collection = self.db['contadores']
-            result = collection.find()
-            logger.debug(result.__dict__)
-            contadores = [{'nombre': contador['nombre'], 'valor': contador['valor']} for contador in result]
-            return contadores
-        except Exception as e:
-            logger.error(f"Error al consultar DB - {e}")
-            return []
+    def save_lectura(self, lectura: Lectura):
+        json_body = [
+            {
+                "measurement": "lectura",
+                "tags": {
+                    "hidrante_id": lectura.hidrante_id,
+                    "user_id": lectura.user_id
+                },
+                "time": lectura.fecha.isoformat(),
+                "fields": {
+                    "valor": lectura.valor
+                }
+            }
+        ]
+        self.db.write_points(json_body)
