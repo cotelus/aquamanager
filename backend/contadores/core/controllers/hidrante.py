@@ -42,7 +42,7 @@ class HydrantController():
                 hydrant_list.append(hydrant_model.to_dict())
             return {'result': hydrant_list}
         else:
-             raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
+            raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
 
     # Conexión e inicialización de la base de datos
     async def initialize_db(self):

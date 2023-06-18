@@ -3,6 +3,7 @@ version: "3.8"
 volumes:
     contadores-db-data: null
     users-db-data: null
+    lecturas-influxdb-data: null
 
 networks:
     aquamanager-net: null
@@ -58,8 +59,10 @@ services:
             - aquamanager-net
         environment:
             CONTADORES_DB: contadores-db
+            LECTURAS_DB: lecturas-influxdb
         depends_on:
             - contadores-db
+            - lecturas-influxdb
     
     # Base de datos de contadores
     contadores-db:
@@ -79,6 +82,21 @@ services:
               target: /data/configdb
               tmpfs:
                   size: 10MB
+                
+    # Servicio de lecturas InfluxDB
+    lecturas-influxdb:
+        image: influxdb
+        restart: unless-stopped
+        logging:
+            options:
+                max-size: "100m"
+                max-file: "3"
+        expose:
+        - "8086/tcp"
+        networks:
+        - aquamanager-net
+        volumes:
+        - "lecturas-influxdb-data:/var/lib/influxdb"
 
     # Servicio de usuarios
     users:

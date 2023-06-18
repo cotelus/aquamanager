@@ -21,3 +21,8 @@ class Lectura(BaseModel):
             hidrante_id=hidrante_id,
             user_id=user_id
         )
+
+    def to_dict(self):
+        returned_dict = self.dict()
+        returned_dict['fecha'] = self.fecha.strftime("%d/%m/%Y, %H:%M:%S")
+        return returned_dict

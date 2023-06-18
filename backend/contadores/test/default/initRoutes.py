@@ -1,8 +1,11 @@
+from datetime import datetime
+from influxdb import InfluxDBClient
 from pymongo import MongoClient
 from core.controllers.lectura import LecturaController
 from core.controllers.hidrante import HydrantController
 from core.log.logger import logger
 from core.load import get_venv
+from core.models.lectura import Lectura
 
 ADMIN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcl9pZCI6MSwiYWRtaW4iOnRydWV9.PSvNGtW-zZMibWQKYldIgrpEc_uJEPKZeR1ErtZd17s"
 NONADMIN_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5vbmFkbWluIiwidXNlcl9pZCI6MiwiYWRtaW4iOmZhbHNlfQ.xq4fGUVdPt-WJ-OZiKa-GqP1JEVS1T_Bthw_Y1kDnnc"
@@ -10,18 +13,24 @@ NORMALEMENTE_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5vcm1
 
 class InitRoutes():
     # Configura las propiedades iniciales para los tests individuales
-    def setup_test(self):
+    async def setup_test(self):
         db = get_venv('CONTADORES_DB')
 
         if db is not None and type(db) is str:
-            # Configura base de datos
+            # Configura base de datos mongo
             self.set_up_mongodb(db)
+
+        if db is not None and type(db) is str:
+            # Configura base de datos influx
+            await self.set_up_influxdb()
 
     def tear_down(self):
         db = get_venv('CONTADORES_DB')
+        influxdb = get_venv('LECTURAS_DB')
 
         # Elimina la base de datos
         self.delete_mongo(db)
+        self.delete_influxdb(influxdb)
 
         # Elimina las instancias de los controladores
         LecturaController.delete_instance()
@@ -78,6 +87,23 @@ class InitRoutes():
         ]
         db.hidrantes.insert_many(hydrant_data)
 
+    async def set_up_influxdb(self):
+        nueva_lectura = Lectura(
+            fecha=datetime.now(),
+            valor=10.5,
+            hidrante_id=1,
+            user_id=1
+        )
+        await LecturaController().save_lectura(nueva_lectura)
+
+        nueva_lectura = Lectura(
+            fecha=datetime.now(),
+            valor=1,
+            hidrante_id=2,
+            user_id=2
+        )
+        await LecturaController().save_lectura(nueva_lectura)
+
     def delete_mongo(self, db_name: str):
         # Conectarse a la base de datos MongoDB con datos por defecto
         client = MongoClient(f'mongodb://{db_name}:27017/')
@@ -89,3 +115,13 @@ class InitRoutes():
 
         # Eliminar la base de datos
         client.drop_database('db')
+
+    def delete_influxdb(self, db_name:str):
+        # Conexión a la base de datos de InfluxDB
+        client = InfluxDBClient(host=db_name, port=8086)
+        
+        # Eliminar la base de datos
+        client.drop_database('lecturas')
+        
+        # Cerrar la conexión
+        client.close()

@@ -14,7 +14,7 @@ class TestRouteHidrante(InitRoutes):
     @pytest.mark.asyncio
     async def test_hydrants_get_list_admin(self):
         app = await prepare_service()
-        self.setup_test()
+        await self.setup_test()
 
         hydrants_list = [
             {
@@ -62,7 +62,7 @@ class TestRouteHidrante(InitRoutes):
     @pytest.mark.asyncio
     async def test_hydrants_get_list_non_admin(self):
         app = await prepare_service()
-        self.setup_test()
+        await self.setup_test()
 
         hydrants_list = [
             {

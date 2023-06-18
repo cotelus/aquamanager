@@ -14,3 +14,16 @@ services:
         target: /data/db
         tmpfs:
           size: 1GB
+
+  # Servicio de lecturas InfluxDB
+  influxdb:
+    image: influxdb:1.8-alpine
+    ports:
+      - "8086:8086/tcp"
+    volumes:
+      - "./tmp:/restore:ro"
+      - type: tmpfs
+        target: /var/lib/influxdb
+        tmpfs:
+          size: 100MB
+
