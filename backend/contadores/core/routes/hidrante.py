@@ -26,7 +26,7 @@ def add_routes(routes: RouteTableDef):
         
         if jwt_header:
             contador = HydrantController()
-            return web.json_response(await contador.insert_hydrant(jwt_header, data), status=http.HTTPStatus.CREATED)
+            return web.json_response(await contador.insert_hydrant(jwt_header, **data), status=http.HTTPStatus.CREATED)
         else:
             return web.Response(text='No se proporcionó el encabezado "jwt"', status=http.HTTPStatus.UNAUTHORIZED)
         
@@ -35,10 +35,13 @@ def add_routes(routes: RouteTableDef):
     async def list_(request: web.Request):
         jwt_header = request.headers.get('Authorization')
         data = await request.json()
+
+        if not 'hydrant_id' in data:
+            return web.Response(text='El id del hidrante es necesario', status=http.HTTPStatus.NOT_ACCEPTABLE)
         
         if jwt_header:
             contador = HydrantController()
-            return web.json_response(await contador.edit_hydrant(jwt_header, data), status=http.HTTPStatus.OK)
+            return web.json_response(await contador.edit_hydrant(jwt_header, hydrant_id=data['hydrant_id'], **data), status=http.HTTPStatus.OK)
         else:
             return web.Response(text='No se proporcionó el encabezado "jwt"', status=http.HTTPStatus.UNAUTHORIZED)
         

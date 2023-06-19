@@ -62,8 +62,18 @@ class HydrantController():
     async def get_hydrant(self, hydrant_id: int):
         await self.initialize_db()
 
+        fields = {
+            '_id': False,  # Excluir el campo '_id'
+            'id': True,
+            'valve_open': True,
+            'user_id': True,
+            'counter': True,
+            'topic': True,
+            'name': True,
+        }
+
         collection = self.db['hidrantes']
-        hydrant = collection.find_one({"id": hydrant_id})
+        hydrant = collection.find_one({"id": hydrant_id}, fields)
         if hydrant:
             return Hidrante(**hydrant)
         else:
@@ -188,7 +198,7 @@ class HydrantController():
             hydrant = await self.get_hydrant(hydrant_id)
             if hydrant:
                 await self.delete_hydrant_db(hydrant.id)
-                return hydrant
+                return {"result": f"Hidrante con id: {hydrant.id} eliminado"}
             else:
                 raise web.HTTPNotFound(reason=f"El hidrante con id:{hydrant_id} no existe")
             

@@ -19,6 +19,7 @@ services:
             - "8080/tcp"
         ports:
             - "8080:443/tcp"
+            # - "8080:80/tcp"
         logging:
             options:
                 max-size: "100m"
@@ -46,7 +47,7 @@ services:
         networks:
             - aquamanager-net
         environment:
-            # VUE_APP_BACKEND_API_BASE_URL: 192.168.1.128:8080
+            # VUE_APP_BACKEND_API_BASE_URL: https://localhost:8080
             VUE_APP_BACKEND_API_BASE_URL: https://aquamanager.ddns.net:8080
     
     # Servicio de contadores
