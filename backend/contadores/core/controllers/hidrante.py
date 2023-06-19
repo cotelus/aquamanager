@@ -172,12 +172,13 @@ class HydrantController():
         if user is not None:
             hydrant = await self.get_hydrant(hydrant_id)
             if hydrant:
-                if not user['admin'] or hydrant.user_id != user['id']:
+                logger.debug(f"Usuario: {user['user_id']} - admin: {user['admin']} - hydrant.user_id: {hydrant.user_id}")
+                if not (user['admin']) and not (hydrant.user_id != user['user_id']):
                     raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
 
                 updated_hydrant = hydrant.copy(update=kwargs)
                 await self.update_hydrant_db(updated_hydrant)
-                return updated_hydrant
+                return {"result": f"Hidrante: {updated_hydrant.to_dict()} actualizado con éxito"}
             else:
                 raise web.HTTPNotFound(reason=f"El hidrante con id:{hydrant_id} no existe")
         else:
