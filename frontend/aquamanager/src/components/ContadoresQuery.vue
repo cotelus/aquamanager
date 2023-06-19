@@ -176,7 +176,6 @@ export default {
         updateHydrant() {
             var jwtToken = localStorage.getItem('jwtToken');
             var updatedHydrant = this.editedItem;
-            updatedHydrant['hydrant_id'] = updatedHydrant['id']
 
             axios.put(`${api_url}/hidrantes/`, updatedHydrant, {
             headers: {
@@ -190,6 +189,27 @@ export default {
             })
             .catch(error => {
                 console.error('Error al actualizar el hidrante:', error);
+            });
+        },
+        deleteItemConfirm() {
+            var jwtToken = localStorage.getItem('jwtToken');
+            var deleteHydrant = {
+                "hydrant_id": this.editedItem.id
+            };
+
+            axios.delete(`${api_url}/hidrantes/`, {
+                headers: {
+                    'Authorization': jwtToken
+                },
+                data: deleteHydrant,
+                })
+            .then(response => {
+                console.log('Hidrante eliminado:', response.data);
+                this.closeDelete();
+                this.fetchContadores();
+            })
+            .catch(error => {
+                console.error(error);
             });
         },
         initialize() {
@@ -211,12 +231,6 @@ export default {
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true
         },
-
-        deleteItemConfirm() {
-            this.contadores.splice(this.editedIndex, 1)
-            this.closeDelete()
-        },
-
         close() {
             this.dialog = false
             this.$nextTick(() => {
