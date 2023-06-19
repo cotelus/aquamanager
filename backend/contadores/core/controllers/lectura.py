@@ -54,19 +54,23 @@ class LecturaController:
 
 
     # Comprueba los datos y luego los inserta en la bd
-    async def insert_lectura(self, **kwargs):
-        required_fields = {'fecha', 'valor', 'hidrante_id', 'user_id'}
-        missing_fields = required_fields - set(kwargs.keys())
-        if missing_fields:
-            raise web.HTTPBadRequest(reason=f"Missing fields: {missing_fields}")
+    async def insert_lectura(self, jwt_header: str, **kwargs):
+        user = await decrypt_jwt(jwt_header)
+        if user is not None and user['admin']:
+            required_fields = {'fecha', 'valor', 'hidrante_id', 'user_id'}
+            missing_fields = required_fields - set(kwargs.keys())
+            if missing_fields:
+                raise web.HTTPBadRequest(reason=f"Campos requeridos: {missing_fields}")
 
-        lectura = Lectura(
-            kwargs['fecha'],
-            kwargs['valor'],
-            kwargs['hidrante_id'],
-            kwargs['user_id']
-        )
-        await self.save_lectura(lectura)
+            lectura = Lectura(
+                kwargs['fecha'],
+                kwargs['valor'],
+                kwargs['hidrante_id'],
+                kwargs['user_id']
+            )
+            await self.save_lectura(lectura)
+        else:
+            raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
 
     # Inserta una lectura en la bd
     async def save_lectura(self, lectura: Lectura):
@@ -103,3 +107,71 @@ class LecturaController:
         except Exception as e:
             logger.error(f"Error al consultar InfluxDB - {e}")
             return []
+
+    # Edita una lectura 
+    async def edit_reading(self, jwt_header: str, **kwargs):
+        user = await decrypt_jwt(jwt_header)
+        if user is not None and user['admin']:
+            required_fields = {'fecha', 'valor', 'hidrante_id', 'user_id'}
+            missing_fields = required_fields - set(kwargs.keys())
+            if missing_fields:
+                raise web.HTTPBadRequest(reason=f"Campos requeridos: {missing_fields}")
+
+            lectura = Lectura(
+                fecha=kwargs['fecha'],
+                valor=kwargs['valor'],
+                hidrante_id=kwargs['hidrante_id'],
+                user_id=kwargs['user_id']
+            )
+
+            await self.update_reading_db(lectura)
+
+    # Edita una lectura en la BD
+    async def update_reading_db(self, lectura: Lectura):
+        await self.initialize_db()
+
+        json_body = [
+            {
+                "measurement": "lectura",
+                "tags": {
+                    "hidrante_id": lectura.hidrante_id,
+                    "user_id": lectura.user_id
+                },
+                "time": lectura.fecha.isoformat(),
+                "fields": {
+                    "valor": lectura.valor
+                }
+            }
+        ]
+        self.db.write_points(json_body)
+
+    # Elimina una lectura
+    async def delete_reading(self, jwt_header: str, **kwargs):
+        user = await decrypt_jwt(jwt_header)
+        if user is not None and user['admin']:
+            required_fields = {'fecha', 'valor', 'hidrante_id', 'user_id'}
+            missing_fields = required_fields - set(kwargs.keys())
+            if missing_fields:
+                raise web.HTTPBadRequest(reason=f"Campos requeridos: {missing_fields}")
+
+            lectura = Lectura(
+                fecha=kwargs['fecha'],
+                valor=kwargs['valor'],
+                hidrante_id=kwargs['hidrante_id'],
+                user_id=kwargs['user_id']
+            )
+            await self.delete_reading_db(lectura)
+        
+        raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
+
+    # Elimina la lectura en la BD
+    async def delete_reading_db(self, lectura: Lectura):
+        await self.initialize_db()
+
+        query = f'DELETE FROM lectura WHERE "hidrante_id" = \'{lectura.hidrante_id}\' AND "user_id" = \'{lectura.user_id}\' AND time = \'{lectura.fecha.isoformat()}\''
+
+        try:
+            self.db.query(query=query)
+        except Exception as e:
+            logger.error(f"Error borrando lectura influxdb - {e}")
+            raise web.HTTPInternalServerError(reason="Error borrando la lectura BD")

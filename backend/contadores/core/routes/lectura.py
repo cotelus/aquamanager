@@ -25,6 +25,6 @@ def add_routes(routes: RouteTableDef):
         
         if jwt_header:
             lectura = LecturaController()
-            return web.json_response(await lectura.insert_lectura(data), status=http.HTTPStatus.OK)
+            return web.json_response(await lectura.insert_lectura(jwt_header, data), status=http.HTTPStatus.OK)
         else:
             return web.Response(text='No se proporcionó el encabezado "jwt"', status=http.HTTPStatus.UNAUTHORIZED)
