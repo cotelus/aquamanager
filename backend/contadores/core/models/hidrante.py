@@ -12,11 +12,11 @@ class Hidrante(BaseModel):
     def __init__(
         self,
         id: int,
-        valve_open: bool,
-        counter: float,
         topic: str,
         user_id: int,
         name: str,
+        valve_open: bool = False,
+        counter: float = 0.0,
     ):
         super().__init__(
             id=id,
