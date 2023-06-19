@@ -1,16 +1,16 @@
 <template>
     <v-card :loading="loading" class="mx-auto elevation-10" max-width="90vw">
-        <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'calories', order: 'asc' }]" :search="search"
-            :custom-filter="filterOnlyCapsText" item-value="name">
+        <v-data-table :header-props="headerProps" :headers="headers" :items="lecturas"
+            :sort-by="[{ key: 'fecha', order: 'desc' }]" :search="search" :custom-filter="filterOnlyCapsText" item-value="name">
             <template v-slot:top>
                 <v-toolbar flat>
-                    <v-text-field v-model="search" label="Buscar lectura (MAYUS)" class="pa-4 mt-4 mx-auto"
+                    <v-text-field v-model="search" label="Buscar lectura (Fecha)" class="pa-4 mt-4 mx-auto"
                         :prepend-icon="search ? 'mdi-magnify' : null" :append-icon="search ? 'mdi-close' : null"
                         @click:append="clearFilter" @input="convertToUpperCase"></v-text-field>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
                             <v-btn color="primary" dark class="mb-2" v-bind="props">
-                                Insertar lectura
+                                Insertar hidrante
                             </v-btn>
                         </template>
                         <v-card>
@@ -22,19 +22,13 @@
                                 <v-container>
                                     <v-row>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field>
+                                            <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
+                                            <v-text-field v-model="editedItem.counter" label="Contador" type="number"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
+                                            <v-text-field v-model="editedItem.topic" label="Tópico"></v-text-field>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -43,17 +37,17 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
-                                    Cancel
+                                    Cancelar
                                 </v-btn>
                                 <v-btn color="blue-darken-1" variant="text" @click="save">
-                                    Save
+                                    Guardar
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
                     <v-dialog v-model="dialogDelete" max-width="500px">
                         <v-card>
-                            <v-card-title class="text-h5">¿Está seguro de borrar la lectura?</v-card-title>
+                            <v-card-title class="text-h5">¿Está seguro de borrar el hidrante?</v-card-title>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Calcelar</v-btn>
@@ -63,6 +57,10 @@
                         </v-card>
                     </v-dialog>
                 </v-toolbar>
+            </template>
+            <template v-slot:[`item.valve_open`]="{ item }">
+                <!-- <span v-html="changeValveText(item.raw)"></span> -->
+                <v-img :src="changeValveText(item.raw)"  class="align-center" max-height="40px"></v-img>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
                 <v-icon size="small" class="me-2" @click="editItem(item.raw)">
@@ -87,6 +85,9 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 
 
 <script>
+import axios from 'axios';
+import api_url from '../config.js';
+
 export default {
     data: () => ({
         search: '',
@@ -94,38 +95,39 @@ export default {
         dialogDelete: false,
         headers: [
             {
-                title: 'Dessert (100g serving)',
-                align: 'start',
-                sortable: false,
-                key: 'name',
+                title: 'Valor',
+                align: 'center',
+                key: 'valor',
             },
-            { title: 'Calories', key: 'calories' },
-            { title: 'Fat (g)', key: 'fat' },
-            { title: 'Carbs (g)', key: 'carbs' },
-            { title: 'Protein (g)', key: 'protein' },
-            { title: 'Actions', key: 'actions', sortable: false },
+            { title: 'Fecha', align: 'center', key: 'fecha' },
+            { title: 'Hidrante', align: 'center', key: 'hidrante_id' },
+            { title: 'Usuario', align: 'center', key: 'user_id' },
+            { title: 'Acciones', key: 'actions', align: 'center', sortable: false },
         ],
-        desserts: [],
+        lecturas: [],
         editedIndex: -1,
         editedItem: {
-            name: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            fecha: "2000-01-01 00:00:00",
+            valor: 0,
+            hidrante_id: -1,
+            user_id: -1
         },
         defaultItem: {
-            name: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            fecha: "2000-01-01 00:00:00",
+            valor: 0,
+            hidrante_id: -1,
+            user_id: -1
+        },
+        headerProps: {
+            class: 'font-weight-bold', // Aplica el estilo de negrita
         },
     }),
-
+    mounted() {
+        this.fetchLecturas();
+    },
     computed: {
         formTitle() {
-            return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+            return this.editedIndex === -1 ? 'Nueva Lectura' : 'Editar Lectura'
         },
     },
 
@@ -143,80 +145,72 @@ export default {
     },
 
     methods: {
+        changeValveText(value) {
+            var bool = Boolean(value.valve_open)
+            if (bool) {
+                return require("@/assets/png/hydrant_on.png");
+            } else {
+                return require("@/assets/png/hydrant_off.png");
+
+            }
+        },
+        fetchLecturas() {
+            var jwtToken = localStorage.getItem('jwtToken');
+
+            axios.get(`${api_url}/lecturas/`, {
+                headers: {
+                    'Authorization': jwtToken
+                }
+            })
+                .then(response => {
+                    this.lecturas = response.data['result'];
+                    console.log(this.lecturas);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+        updateHydrant() {
+            var jwtToken = localStorage.getItem('jwtToken');
+            var updatedHydrant = this.editedItem;
+
+            axios.put(`${api_url}/lecturas/`, updatedHydrant, {
+            headers: {
+                'Authorization': jwtToken
+            }
+            })
+            .then(response => {
+                console.log('Lectura actualizada:', response.data);
+                this.close();
+                this.fetchLecturas();
+            })
+            .catch(error => {
+                console.error('Error al actualizar la lectura:', error);
+            });
+        },
+        deleteItemConfirm() {
+            var jwtToken = localStorage.getItem('jwtToken');
+            var deleteHydrant = {
+                "hydrant_id": this.editedItem.id
+            };
+
+            axios.delete(`${api_url}/lecturas/`, {
+                headers: {
+                    'Authorization': jwtToken
+                },
+                data: deleteHydrant,
+                })
+            .then(response => {
+                console.log('Hidrante eliminado:', response.data);
+                this.closeDelete();
+                this.fetchLecturas();
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        },
         initialize() {
             this.clearFilter();
-            this.desserts = [
-                {
-                    name: 'Frozen Yogurt',
-                    calories: 159,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0,
-                },
-                {
-                    name: 'Ice cream sandwich',
-                    calories: 237,
-                    fat: 9.0,
-                    carbs: 37,
-                    protein: 4.3,
-                },
-                {
-                    name: 'Eclair',
-                    calories: 262,
-                    fat: 16.0,
-                    carbs: 23,
-                    protein: 6.0,
-                },
-                {
-                    name: 'Cupcake',
-                    calories: 305,
-                    fat: 3.7,
-                    carbs: 67,
-                    protein: 4.3,
-                },
-                {
-                    name: 'Gingerbread',
-                    calories: 356,
-                    fat: 16.0,
-                    carbs: 49,
-                    protein: 3.9,
-                },
-                {
-                    name: 'Jelly bean',
-                    calories: 375,
-                    fat: 0.0,
-                    carbs: 94,
-                    protein: 0.0,
-                },
-                {
-                    name: 'Lollipop',
-                    calories: 392,
-                    fat: 0.2,
-                    carbs: 98,
-                    protein: 0,
-                },
-                {
-                    name: 'Honeycomb',
-                    calories: 408,
-                    fat: 3.2,
-                    carbs: 87,
-                    protein: 6.5,
-                },
-                {
-                    name: 'Donut',
-                    calories: 452,
-                    fat: 25.0,
-                    carbs: 51,
-                    protein: 4.9,
-                },
-                {
-                    name: 'KitKat',
-                    calories: 518,
-                    fat: 26.0,
-                    carbs: 65,
-                    protein: 7,
-                },
-            ]
         },
 
         clearFilter() {
@@ -224,22 +218,16 @@ export default {
         },
 
         editItem(item) {
-            this.editedIndex = this.desserts.indexOf(item)
+            this.editedIndex = this.lecturas.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
 
         deleteItem(item) {
-            this.editedIndex = this.desserts.indexOf(item)
+            this.editedIndex = this.lecturas.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true
         },
-
-        deleteItemConfirm() {
-            this.desserts.splice(this.editedIndex, 1)
-            this.closeDelete()
-        },
-
         close() {
             this.dialog = false
             this.$nextTick(() => {
@@ -258,11 +246,11 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                Object.assign(this.desserts[this.editedIndex], this.editedItem)
+                this.updateHydrant();
             } else {
-                this.desserts.push(this.editedItem)
+                this.lecturas.push(this.editedItem);
             }
-            this.close()
+            this.close();
         },
         filterOnlyCapsText(value, query) {
             return value != null &&
@@ -276,3 +264,9 @@ export default {
     },
 }
 </script>
+
+<style>
+.v-data-table-header__content {
+    font-weight: bold;
+}
+</style>
