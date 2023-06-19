@@ -2,7 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 class Hidrante(BaseModel):
-    id: int = Field(..., description="ID del hidrante")
+    id: int = Field(..., gt=0, description="ID del hidrante")
     valve_open: bool = Field(..., description="Indicador de si la válvula está abierta")
     counter: float = Field(..., ge=0, description="Contador del hidrante")
     topic: str = Field(..., description="Tópico del hidrante")

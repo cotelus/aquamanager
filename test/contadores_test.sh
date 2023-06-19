@@ -1,1 +1,1 @@
-CONTADORES_DB=localhost python -m pytest .
+CONTADORES_DB=localhost LECTURAS_DB=localhost python -m pytest .
