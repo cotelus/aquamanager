@@ -86,18 +86,11 @@ services:
                 
     # Servicio de lecturas InfluxDB
     lecturas-influxdb:
-        image: influxdb
-        restart: unless-stopped
-        logging:
-            options:
-                max-size: "100m"
-                max-file: "3"
-        expose:
-        - "8086/tcp"
+        image: influxdb:1.8-alpine
         networks:
-        - aquamanager-net
+          - aquamanager-net
         volumes:
-        - "lecturas-influxdb-data:/var/lib/influxdb"
+          - "lecturas-influxdb-data:/var/lib/influxdb"
 
     # Servicio de usuarios
     users:

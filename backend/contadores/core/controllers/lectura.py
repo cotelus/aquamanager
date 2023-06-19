@@ -1,3 +1,4 @@
+from datetime import datetime
 from influxdb import InfluxDBClient
 from core.log.logger import logger
 from influxdb import InfluxDBClient
@@ -5,6 +6,7 @@ from core.models.lectura import Lectura
 from aiohttp import web
 from core.tools import decrypt_jwt
 from core.controllers.hidrante import HydrantController
+from dateutil import parser
 
 class LecturaController:
     _instance = None
@@ -41,7 +43,7 @@ class LecturaController:
             db_list = await self.get_list_from_db(user['user_id'], user['admin'])
             for lectura in db_list.get_points():
                 lectura_model = Lectura(
-                    fecha = lectura['time'],
+                    fecha = parser.parse(lectura['time']).timestamp(),
                     valor = lectura['valor'],
                     hidrante_id = lectura['hidrante_id'],
                     user_id = lectura['user_id'],
@@ -83,7 +85,7 @@ class LecturaController:
                     "hidrante_id": lectura.hidrante_id,
                     "user_id": lectura.user_id
                 },
-                "time": lectura.fecha.isoformat(),
+                "time": datetime.fromtimestamp(lectura.fecha).isoformat(),
                 "fields": {
                     "valor": lectura.valor
                 }
@@ -137,7 +139,7 @@ class LecturaController:
                     "hidrante_id": lectura.hidrante_id,
                     "user_id": lectura.user_id
                 },
-                "time": lectura.fecha.isoformat(),
+                "time": datetime.fromtimestamp(lectura.fecha).isoformat(),
                 "fields": {
                     "valor": lectura.valor
                 }
@@ -168,7 +170,7 @@ class LecturaController:
     async def delete_reading_db(self, lectura: Lectura):
         await self.initialize_db()
 
-        query = f'DELETE FROM lectura WHERE "hidrante_id" = \'{lectura.hidrante_id}\' AND "user_id" = \'{lectura.user_id}\' AND time = \'{lectura.fecha.isoformat()}\''
+        query = f'DELETE FROM lectura WHERE "hidrante_id" = \'{lectura.hidrante_id}\' AND "user_id" = \'{lectura.user_id}\' AND time = \'{datetime.fromtimestamp(lectura.fecha).isoformat()}\''
 
         try:
             self.db.query(query=query)

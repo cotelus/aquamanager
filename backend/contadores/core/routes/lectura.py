@@ -21,10 +21,15 @@ def add_routes(routes: RouteTableDef):
     @routes.post('/lecturas/')
     async def list_(request: web.Request):
         jwt_header = request.headers.get('Authorization')
-        data = await request.json()
+        data = None
+
+        try:
+            data = await request.json()
+        except:
+            return web.Response(text='La petición necesita cuerpo', status=http.HTTPStatus.NOT_ACCEPTABLE)
         
         if jwt_header:
             lectura = LecturaController()
-            return web.json_response(await lectura.insert_lectura(jwt_header, data), status=http.HTTPStatus.OK)
+            return web.json_response(await lectura.insert_lectura(jwt_header, **data), status=http.HTTPStatus.OK)
         else:
             return web.Response(text='No se proporcionó el encabezado "jwt"', status=http.HTTPStatus.UNAUTHORIZED)
