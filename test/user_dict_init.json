@@ -1,5 +1,5 @@
 /*
-    admin - 1234
+    admin - marselomelon
     noadmin - nosoyadmin
     normalmente - nosoyadmintampoco
 */
@@ -8,7 +8,7 @@
     {
         "admin": true,
         "id": 1,
-        "password": "$2a$12$nb8Z1HFvy3FLTjI.TaGm3OFQUreVMaQiQoN/Y5vxZ0Qu40pWLJ7Uq",
+        "password": "$2a$12$xWvuKbbLz14zmNhSVea8GePdf2XS8yO8F89jJ.2GMzVPYQyi/sj6.",
         "username": "admin"
     },
     {
