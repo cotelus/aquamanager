@@ -25,13 +25,10 @@
                                             <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.counter" label="Contador"></v-text-field>
+                                            <v-text-field v-model="editedItem.counter" label="Contador" type="number"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field v-model="editedItem.topic" label="Tópico"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.userId" label="Usuario"></v-text-field>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -111,18 +108,18 @@ export default {
         contadores: [],
         editedIndex: -1,
         editedItem: {
-            name: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            id: -1,
+            name: "",
+            counter: 0,
+            valve_open: false,
+            topic: "",
         },
         defaultItem: {
-            name: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            id: -1,
+            name: "",
+            counter: 0,
+            valve_open: false,
+            topic: "",
         },
         headerProps: {
             class: 'font-weight-bold', // Aplica el estilo de negrita
@@ -176,6 +173,25 @@ export default {
                     console.error(error);
                 });
         },
+        updateHydrant() {
+            var jwtToken = localStorage.getItem('jwtToken');
+            var updatedHydrant = this.editedItem;
+            updatedHydrant['hydrant_id'] = updatedHydrant['id']
+
+            axios.put(`${api_url}/hidrantes/`, updatedHydrant, {
+            headers: {
+                'Authorization': jwtToken
+            }
+            })
+            .then(response => {
+                console.log('Hidrante actualizado:', response.data);
+                this.close();
+                this.fetchContadores();
+            })
+            .catch(error => {
+                console.error('Error al actualizar el hidrante:', error);
+            });
+        },
         initialize() {
             this.clearFilter();
         },
@@ -185,19 +201,19 @@ export default {
         },
 
         editItem(item) {
-            this.editedIndex = this.desserts.indexOf(item)
+            this.editedIndex = this.contadores.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
 
         deleteItem(item) {
-            this.editedIndex = this.desserts.indexOf(item)
+            this.editedIndex = this.contadores.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true
         },
 
         deleteItemConfirm() {
-            this.desserts.splice(this.editedIndex, 1)
+            this.contadores.splice(this.editedIndex, 1)
             this.closeDelete()
         },
 
@@ -219,11 +235,11 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                Object.assign(this.contadores[this.editedIndex], this.editedItem)
+                this.updateHydrant();
             } else {
-                this.contadores.push(this.editedItem)
+                this.contadores.push(this.editedItem);
             }
-            this.close()
+            this.close();
         },
         filterOnlyCapsText(value, query) {
             return value != null &&

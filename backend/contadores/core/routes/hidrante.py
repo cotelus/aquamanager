@@ -41,7 +41,7 @@ def add_routes(routes: RouteTableDef):
         
         if jwt_header:
             contador = HydrantController()
-            return web.json_response(await contador.edit_hydrant(jwt_header, hydrant_id=data['hydrant_id'], **data), status=http.HTTPStatus.OK)
+            return web.json_response(await contador.edit_hydrant(jwt_header, **data), status=http.HTTPStatus.OK)
         else:
             return web.Response(text='No se proporcionó el encabezado "jwt"', status=http.HTTPStatus.UNAUTHORIZED)
         
