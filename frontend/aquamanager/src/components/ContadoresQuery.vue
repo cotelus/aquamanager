@@ -25,7 +25,8 @@
                                             <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.counter" label="Contador" type="number"></v-text-field>
+                                            <v-text-field v-model="editedItem.counter" label="Contador"
+                                                type="number"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field v-model="editedItem.topic" label="Tópico"></v-text-field>
@@ -56,11 +57,14 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
+                    <v-snackbar v-model="errorSnackbar" color="error" top right>
+                        {{ errorMessage }}
+                    </v-snackbar>
                 </v-toolbar>
             </template>
             <template v-slot:[`item.valve_open`]="{ item }">
                 <!-- <span v-html="changeValveText(item.raw)"></span> -->
-                <v-img :src="changeValveText(item.raw)"  class="align-center" max-height="40px"></v-img>
+                <v-img :src="changeValveText(item.raw)" class="align-center" max-height="40px"></v-img>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
                 <v-icon size="small" class="me-2" @click="editItem(item.raw)">
@@ -90,6 +94,9 @@ import api_url from '../config.js';
 
 export default {
     data: () => ({
+        errorSnackbar: false,
+        errorMessage: '',
+        errorSnackbarTimeout: 3000,
         search: '',
         dialog: false,
         dialogDelete: false,
@@ -176,20 +183,22 @@ export default {
         updateHydrant() {
             var jwtToken = localStorage.getItem('jwtToken');
             var updatedHydrant = this.editedItem;
+            // updatedHydrant["hydrant_id"] = this.editedItem.id;
 
             axios.put(`${api_url}/hidrantes/`, updatedHydrant, {
-            headers: {
-                'Authorization': jwtToken
-            }
+                headers: {
+                    'Authorization': jwtToken
+                }
             })
-            .then(response => {
-                console.log('Hidrante actualizado:', response.data);
-                this.close();
-                this.fetchContadores();
-            })
-            .catch(error => {
-                console.error('Error al actualizar el hidrante:', error);
-            });
+                .then(response => {
+                    console.log('Hidrante actualizado:', response.data);
+                    this.close();
+                    this.fetchContadores();
+                })
+                .catch(error => {
+                    this.showErrorMessage('Error al actualizar el hidrante: ' + error.response.data)
+                    console.error('Error al actualizar el hidrante:', error.response.data);
+                });
         },
         deleteItemConfirm() {
             var jwtToken = localStorage.getItem('jwtToken');
@@ -202,15 +211,16 @@ export default {
                     'Authorization': jwtToken
                 },
                 data: deleteHydrant,
-                })
-            .then(response => {
-                console.log('Hidrante eliminado:', response.data);
-                this.closeDelete();
-                this.fetchContadores();
             })
-            .catch(error => {
-                console.error(error);
-            });
+                .then(response => {
+                    console.log('Hidrante eliminado:', response.data);
+                    this.closeDelete();
+                    this.fetchContadores();
+                })
+                .catch(error => {
+                    this.showErrorMessage('Error al actualizar el hidrante: ' + error.response.data)
+                    console.error('Error al actualizar el hidrante:', error.response.data);
+                });
         },
         initialize() {
             this.clearFilter();
@@ -263,6 +273,15 @@ export default {
         },
         convertToUpperCase() {
             this.search = this.search.toUpperCase();
+        },
+        showErrorMessage(message) {
+            this.errorMessage = message;
+            this.errorSnackbar = true;
+
+            setTimeout(() => {
+                this.errorSnackbar = false;
+                this.errorMessage = '';
+            }, this.errorSnackbarTimeout);
         },
     },
 }
