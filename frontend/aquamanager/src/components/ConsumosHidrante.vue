@@ -3,14 +3,17 @@
   <v-card :loading="loading" class="mx-auto elevation-10" max-width="80vw">
     <v-card-text>
       <v-row>
-        <v-col cols="5">
+        <v-col cols="4" class="d-flex align-center">
           <v-text-field type="date" id="datepicker" v-model="lowDate" label="Fecha Inferior"></v-text-field>
         </v-col>
-        <v-col cols="5">
+        <v-col cols="4" class="d-flex align-center">
           <v-text-field type="date" id="datepicker" v-model="highDate" label="Fecha Superior"></v-text-field>
         </v-col>
-        <v-col cols="2">
-          <v-select v-model="selectedHydrant" :items="hydrantsNames" item-text="name" label="Hidrantes"></v-select>
+        <v-col cols="2" class="d-flex align-center">
+          <v-select v-model="selectedHydrant" :items="hydrantsNames" item-text="name" label="Hidrante"></v-select>
+        </v-col>
+        <v-col cols="2" class="pt-6 align-center">
+          <v-btn @click="calcularConsumo" color="primary" dark>Calcular<br>consumo</v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -57,6 +60,23 @@ export default {
     this.fetchContadores();
   },
   methods: {
+    calcularConsumos() {
+      // Realizar la petición al backend con los datos seleccionados
+      axios
+        .get('URL_DE_TU_API', {
+          params: {
+            lowDate: this.lowDate,
+            highDate: this.highDate,
+            selectedHydrant: this.selectedHydrant,
+          },
+        })
+        .then((response) => {
+          this.data = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     fetchContadores() {
       var jwtToken = localStorage.getItem('jwtToken');
 
