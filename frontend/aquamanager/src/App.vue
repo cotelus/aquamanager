@@ -59,7 +59,7 @@ export default {
         { path: '/comuneros', name: 'Comuneros', icon: 'mdi-account-group-outline' },
         { path: '/contadores', name: 'Hidrantes', icon: 'mdi-water-outline' },
         { path: '/lecturas', name: 'Lecturas', icon: 'mdi-book-open-outline' },
-        { path: '/contadores', name: 'Consumo', icon: 'mdi-cash-multiple' },
+        { path: '/consumos', name: 'Consumo', icon: 'mdi-cash-multiple' },
         { path: '/about', name: 'Sobre mi', icon: 'mdi-information' }
       ],
       threeDotsItems: [

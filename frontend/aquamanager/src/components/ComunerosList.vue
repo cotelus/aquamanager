@@ -23,10 +23,21 @@
 </template>
 
 <script>
+import router from '../router.js';
 export default {
     data: () => ({
         items: Array.from({ length: 1000 }, (k, v) => v + 1),
     }),
+    mounted() {
+        this.backToLogin();
+    },
+    methods: {
+        backToLogin() {
+            if (!localStorage.getItem('jwtToken')) {
+                router.push({ path: '/login' })
+            }
+        },
+    }
 }
 </script>
 

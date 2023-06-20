@@ -6,6 +6,7 @@ import ComunerosList from './components/ComunerosList.vue';
 import Inicio from './components/Inicio.vue';
 import LoginForm from './components/LoginForm.vue';
 import LecturasTable from './components/LecturasTable.vue';
+import ConsumosHidrante from './components/ConsumosHidrante.vue'
 
 const routes = [
   {
@@ -31,6 +32,10 @@ const routes = [
   {
     path: '/lecturas',
     component: LecturasTable
+  },
+  {
+    path: '/consumos',
+    component: ConsumosHidrante
   },
   {
     path: '/:catchAll(.*)',

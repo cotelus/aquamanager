@@ -1,4 +1,5 @@
 <template>
+    <h1 class="text-white">Hidrantes</h1>
     <v-card :loading="loading" class="mx-auto elevation-10" max-width="90vw">
         <v-data-table :header-props="headerProps" :headers="headers" :items="contadores"
             :sort-by="[{ key: 'id', order: 'asc' }]" :search="search" :custom-filter="filterOnlyCapsText" item-value="name">
@@ -91,6 +92,7 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 <script>
 import axios from 'axios';
 import api_url from '../config.js';
+import router from '../router.js';
 
 export default {
     data: () => ({
@@ -133,6 +135,7 @@ export default {
         },
     }),
     mounted() {
+        this.backToLogin();
         this.fetchContadores();
     },
     computed: {
@@ -155,6 +158,11 @@ export default {
     },
 
     methods: {
+        backToLogin() {
+            if (!localStorage.getItem('jwtToken')) {
+                router.push({ path: '/login' })
+            }
+        },
         changeValveText(value) {
             var bool = Boolean(value.valve_open)
             if (bool) {

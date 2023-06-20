@@ -1,4 +1,5 @@
 <template>
+    <h1 class="text-white">Lecturas</h1>
     <v-card :loading="loading" class="mx-auto elevation-10" max-width="90vw">
         <v-data-table :header-props="headerProps" :headers="headers" :items="lecturas"
             :sort-by="[{ key: 'fecha', order: 'desc' }]" :search="search" :custom-filter="filterOnlyCapsText" item-value="name">
@@ -87,6 +88,7 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 <script>
 import axios from 'axios';
 import api_url from '../config.js';
+import router from '../router.js';
 
 export default {
     data: () => ({
@@ -123,6 +125,7 @@ export default {
         },
     }),
     mounted() {
+        this.backToLogin();
         this.fetchLecturas();
     },
     computed: {
@@ -145,6 +148,11 @@ export default {
     },
 
     methods: {
+        backToLogin() {
+            if (!localStorage.getItem('jwtToken')) {
+                router.push({ path: '/login' })
+            }
+        },
         changeValveText(value) {
             var bool = Boolean(value.valve_open)
             if (bool) {
