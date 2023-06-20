@@ -23,8 +23,9 @@ class ConsumptionController():
 
     # Devuelve un consumo
     async def get_consumption(self, jwt_header:str, **kwargs):
+        logger.info("Calculando consumo")
         user = await decrypt_jwt(jwt_header)
-        if user is not None and user['admin']:
+        if user is not None:
             required_fields = {'fecha_inicial', 'fecha_final', 'nombre_hidrante'}
             missing_fields = required_fields - set(kwargs.keys())
             if missing_fields:
@@ -36,10 +37,13 @@ class ConsumptionController():
                 fecha1 = kwargs['fecha_final'] / 1000
                 fecha2 = kwargs['fecha_inicial'] / 1000
 
-            hidrante = HydrantController.get_hydrant_by_name(kwargs['nombre_hidrante'])
+            hydrants = HydrantController()
+            readings = LecturaController()
+
+            hidrante = await hydrants.get_hydrant_by_name(hydrant_name=kwargs['nombre_hidrante'])
             if hidrante is not None:
-                valor_inicial = LecturaController.get_closest_reading(fecha1, hidrante.id)
-                valor_final = LecturaController.get_closest_reading(fecha2, hidrante.id)
+                valor_inicial = await readings.get_closest_reading(datetime.fromtimestamp(fecha1), hidrante.id)
+                valor_final = await readings.get_closest_reading(datetime.fromtimestamp(fecha2), hidrante.id)
 
                 consumo = Consumo(
                     fecha1,
@@ -47,31 +51,9 @@ class ConsumptionController():
                     valor_inicial.valor,
                     valor_final.valor,
                     hidrante.id,
-                    hidrante.nombre,
+                    hidrante.name,
                     valor_final.valor - valor_inicial.valor
                 )
                 return {"result": consumo.to_dict()}
             else:
                 return web.HTTPNotFound(reason=f"Hidrante: {kwargs['nombre_hidrante']} no existe")
-
-            
-        
-
-    async def get_list(self, jwt_header: str):
-        user = await decrypt_jwt(jwt_header)
-        if user is not None:
-            hydrant_list = list()
-            db_list = await self.get_list_from_db(user['user_id'], user['admin'])
-            for hydrant in db_list:
-                hydrant_model = Hidrante(
-                    id = hydrant['id'],
-                    valve_open = hydrant['valve_open'],
-                    counter = hydrant['counter'],
-                    topic = hydrant['topic'],
-                    user_id = hydrant['user_id'],
-                    name = hydrant['name'],
-                )
-                hydrant_list.append(hydrant_model.to_dict())
-            return {'result': hydrant_list}
-        else:
-            raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")

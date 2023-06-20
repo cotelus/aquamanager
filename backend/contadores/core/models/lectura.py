@@ -6,7 +6,7 @@ class Lectura(BaseModel):
     fecha: float = Field(..., description="Fecha de la lectura")
     valor: float = Field(..., ge=0, description="Valor de la lectura")
     hidrante_id: int = Field(..., gt=0, description="ID del hidrante")
-    user_id: int = Field(..., gt=0, description="ID del usuario")
+    user_id: int = Field(..., ge=0, description="ID del usuario")
 
     def __init__(
         self,

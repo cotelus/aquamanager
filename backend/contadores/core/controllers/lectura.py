@@ -58,6 +58,7 @@ class LecturaController:
         await self.initialize_db()
 
         query = f'SELECT * FROM lectura WHERE "hidrante_id" = \'{id_hidrante}\' AND time <= \'{fecha.isoformat()}\' ORDER BY time DESC LIMIT 1'
+        lectura_model:Lectura = None
 
         try:
             result = self.db.query(query=query)
@@ -71,13 +72,13 @@ class LecturaController:
         except Exception as e:
             logger.error(f"Error al consultar InfluxDB - {e}")
             lectura_model = Lectura(
-                fecha=parser.parse(lectura['time']).timestamp(),
+                fecha=parser.parse(fecha.isoformat()).timestamp(),
                 valor=0,
-                hidrante_id=lectura['hidrante_id'],
-                user_id=lectura['user_id'],
+                hidrante_id=id_hidrante,
+                user_id=0,
             )
-        finally:
-            return lectura_model.to_dict()
+        
+        return lectura_model
 
     # Comprueba los datos y luego los inserta en la bd
     async def insert_lectura(self, jwt_header: str, **kwargs):
