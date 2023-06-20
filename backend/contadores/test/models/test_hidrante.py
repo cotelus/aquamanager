@@ -1,6 +1,5 @@
 from pydantic import ValidationError
 import pytest
-from aiohttp.test_utils import TestClient, TestServer
 from core.models.hidrante import Hidrante
 
 class TestModelHidrante():

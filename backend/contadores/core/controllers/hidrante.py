@@ -78,6 +78,27 @@ class HydrantController():
             return Hidrante(**hydrant)
         else:
             return None
+        
+        # Devuelve un hidrante en función de su id
+    async def get_hydrant_by_name(self, hydrant_name: str):
+        await self.initialize_db()
+
+        fields = {
+            '_id': False,  # Excluir el campo '_id'
+            'id': True,
+            'valve_open': True,
+            'user_id': True,
+            'counter': True,
+            'topic': True,
+            'name': True,
+        }
+
+        collection = self.db['hidrantes']
+        hydrant = collection.find_one({"name": hydrant_name}, fields)
+        if hydrant:
+            return Hidrante(**hydrant)
+        else:
+            return None
 
     # Inicializa las colecciones de la base de datos
     async def initialize_db_collections(self):

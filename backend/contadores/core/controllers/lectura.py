@@ -53,7 +53,31 @@ class LecturaController:
         else:
             raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
 
+    # Devuelve la lectura más reciente a la fecha dada
+    async def get_closest_reading(self, fecha: datetime, id_hidrante: int):
+        await self.initialize_db()
 
+        query = f'SELECT * FROM lectura WHERE "hidrante_id" = \'{id_hidrante}\' AND time <= \'{fecha.isoformat()}\' ORDER BY time DESC LIMIT 1'
+
+        try:
+            result = self.db.query(query=query)
+            lectura = result.get_points().next()
+            lectura_model = Lectura(
+                fecha=parser.parse(lectura['time']).timestamp(),
+                valor=lectura['valor'],
+                hidrante_id=lectura['hidrante_id'],
+                user_id=lectura['user_id'],
+            )
+        except Exception as e:
+            logger.error(f"Error al consultar InfluxDB - {e}")
+            lectura_model = Lectura(
+                fecha=parser.parse(lectura['time']).timestamp(),
+                valor=0,
+                hidrante_id=lectura['hidrante_id'],
+                user_id=lectura['user_id'],
+            )
+        finally:
+            return lectura_model.to_dict()
 
     # Comprueba los datos y luego los inserta en la bd
     async def insert_lectura(self, jwt_header: str, **kwargs):
