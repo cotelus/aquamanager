@@ -19,3 +19,6 @@ class User(BaseModel):
             username=username,
             admin=admin
         )
+
+    def to_dict(self):
+        return self.dict()

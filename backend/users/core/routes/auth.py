@@ -27,3 +27,13 @@ def add_routes(routes: RouteTableDef):
         return web.json_response(
             await auth.decrypt_jwt(jwt), status=http.HTTPStatus.OK
         )
+    
+    @routes.get('/users/')
+    async def list_(request: web.Request):
+        jwt_header = request.headers.get('Authorization')
+
+        if jwt_header:
+            usuarios = AuthController()
+            return web.json_response(await usuarios.get_list(jwt_header), status=http.HTTPStatus.OK)
+        else:
+            return web.Response(text='No se proporcionó el encabezado "jwt"', status=http.HTTPStatus.UNAUTHORIZED)

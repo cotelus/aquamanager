@@ -107,3 +107,40 @@ class AuthController():
                 logger.debug(f"Invalid password format - {username}")
 
         return user
+
+
+    async def get_list(self, jwt_header:str):
+        user = await self.decrypt_jwt(jwt_header)
+        if user is not None and user['admin']:
+            users_list = list()
+            db_list = await self.get_list_from_db()
+            for user in db_list:
+                user_model = User(
+                    id = user['id'],
+                    username = user['username'],
+                    admin = user['admin'],
+                )
+                users_list.append(user_model.to_dict())
+            return {'result': users_list}
+        else:
+            raise web.HTTPForbidden(reason="El usuario no tiene suficientes privilegios")
+
+    # Rescatar elementos de la base de datos
+    async def get_list_from_db(self):
+        await self.initialize_db()
+
+        fields = {
+            '_id': False,  # Excluir el campo '_id'
+            'id': True,
+            'username': True,
+            'admin': True,
+        }
+
+        try:
+            collection = self.db['usuarios']
+            result = collection.find({}, fields)
+            logger.debug(result.__dict__)
+            return result
+        except Exception as e:
+            logger.error(f"Error al consultar DB - {e}")
+            return []

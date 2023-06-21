@@ -16,18 +16,16 @@
 </template>
 
 <script>
-// import axios from 'axios';
-// import api_url from '../config.js';
 import router from '../router.js';
 
 export default {
     name: 'SeleccionObjetivo',
     data: () => ({
         cards: [
-            { title: 'Comuneros', src: require("@/assets/svg/persons.svg"), flex: 6, route:"/comuneros/" },
-            { title: 'Hidrantes', src: require("@/assets/svg/hydrants.svg"), flex: 6, route:"/contadores/"},
-            { title: 'Lecturas', src: require("@/assets/svg/reading.svg"), flex: 6, route:"/lecturas/" },
-            { title: 'Consumo', src: require("@/assets/svg/consumption.svg"), flex: 6, route:"/consumos/" },
+            { title: 'Comuneros', src: require("@/assets/svg/persons.svg"), flex: 6, route: "/comuneros/" },
+            { title: 'Hidrantes', src: require("@/assets/svg/hydrants.svg"), flex: 6, route: "/contadores/" },
+            { title: 'Lecturas', src: require("@/assets/svg/reading.svg"), flex: 6, route: "/lecturas/" },
+            { title: 'Consumo', src: require("@/assets/svg/consumption.svg"), flex: 6, route: "/consumos/" },
         ],
     }),
     mounted() {
