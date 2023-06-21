@@ -5,12 +5,10 @@ volumes:
     users-db-data: null
     lecturas-influxdb-data: null
 
-networks:
-    aquamanager-net: null
-
 services:
     # Servicio proxy - filtro
     proxy:
+        image: aquamanager.ddns.net:5000/aquamanager_proxy
         build:
             context: ./proxy
             dockerfile: dockerfile
@@ -24,8 +22,6 @@ services:
             options:
                 max-size: "100m"
                 max-file: "3"
-        networks:
-            - aquamanager-net
         volumes:
             - ./proxy/apigateway/:/etc/nginx/conf.d/:ro
             - ./certs:/etc/letsencrypt
@@ -36,6 +32,7 @@ services:
 
     # Servicio de front-end
     aquamanager:
+        image: aquamanager.ddns.net:5000/aquamanager_aquamanager
         build:
             context: ./frontend/aquamanager
             dockerfile: dockerfile
@@ -44,20 +41,17 @@ services:
         ports:
             - "80:8080/tcp"
         restart: unless-stopped
-        networks:
-            - aquamanager-net
         environment:
             # VUE_APP_BACKEND_API_BASE_URL: https://localhost:8080
             VUE_APP_BACKEND_API_BASE_URL: https://aquamanager.ddns.net:8080
     
     # Servicio de contadores
     contadores:
+        image: aquamanager.ddns.net:5000/aquamanager_contadores
         build:
             context: ./backend/contadores
             dockerfile: dockerfile
         restart: unless-stopped
-        networks:
-            - aquamanager-net
         environment:
             CONTADORES_DB: contadores-db
             LECTURAS_DB: lecturas-influxdb
@@ -75,31 +69,26 @@ services:
                 max-file: "3"
         expose:
             - "27017/tcp"
-        networks:
-            - aquamanager-net
         volumes:
             - "contadores-db-data:/data/db"
             - type: tmpfs
               target: /data/configdb
               tmpfs:
-                  size: 10MB
-                
+                  size: 10
+
     # Servicio de lecturas InfluxDB
     lecturas-influxdb:
         image: influxdb:1.8-alpine
-        networks:
-          - aquamanager-net
         volumes:
           - "lecturas-influxdb-data:/var/lib/influxdb"
 
     # Servicio de usuarios
     users:
+        image: aquamanager.ddns.net:5000/aquamanager_users
         build:
             context: ./backend/users
             dockerfile: dockerfile
         restart: unless-stopped
-        networks:
-            - aquamanager-net
         environment:
             AUTH_DB: users-db
         depends_on:
@@ -115,11 +104,9 @@ services:
                 max-file: "3"
         expose:
             - "27017/tcp"
-        networks:
-            - aquamanager-net
         volumes:
             - "users-db-data:/data/db"
             - type: tmpfs
               target: /data/configdb
               tmpfs:
-                  size: 10MB
+                  size: 10
